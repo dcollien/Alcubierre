@@ -5,9 +5,12 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
+#include "limits.h"
 #include "layer.h"
 
 struct layer {
+    tile_t tiles[MAP_SZ];
 };
 
 static error_t layer_parse_file(const char *path, struct layer *layer);
@@ -30,11 +33,21 @@ void layer_destroy(struct layer *to_destroy) {
 }
 
 error_t layer_render(struct layer *to_render) {
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 error_t layer_parse_file(const char *path, struct layer *layer) {
-    return 0;
-}
+    size_t read_len;
+    FILE *fin;
+    
+    fin = fopen(path, "r");
+    if (fin != NULL) {
+        read_len = fread(layer->tiles, sizeof(tile_t), MAP_SZ, fin);
+        fclose(fin);
+        if (read_len) {
+            return EXIT_SUCCESS;        
+        }
+    }
 
-#endif /* ALC_LAYER_H_ */
+    return EXIT_FAILURE;
+}

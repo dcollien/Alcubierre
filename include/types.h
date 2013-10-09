@@ -3,5 +3,6 @@
 
 typedef int flags_t;
 typedef int error_t;
+typedef char tile_t;
 
 #endif /* ALC_TYPES_H */
