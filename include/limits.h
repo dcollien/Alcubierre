@@ -7,8 +7,8 @@
 #ifndef ALC_LIMITS_H_
 #define ALC_LIMITS_H_
 
-#define TILE_SZ 32 // The size of the tile in pixels
-#define MAP_SZ 32  // The size of the map in tiles.
+#define TILE_SZ 32     // The size of the tile in pixels
+#define MAP_SZ (32*3)  // The size of the map in tiles.
 
 #endif /* ALC_LIMITS_H_ */
 
