@@ -6,10 +6,12 @@
 #ifndef ALC_LAYER_H_
 #define ALC_LAYER_H_
 
+#include "limits.h"
 #include "types.h"
 
-/* Prototype */
-struct layer;
+struct layer {
+    tile_t tiles[MAP_SZ];
+};
 
 /**
  * @brief Constructs a layer from the file path returning null if the file

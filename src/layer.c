@@ -9,10 +9,6 @@
 #include "limits.h"
 #include "layer.h"
 
-struct layer {
-    tile_t tiles[MAP_SZ];
-};
-
 static error_t layer_parse_file(const char *path, struct layer *layer);
 
 struct layer *layer_init(const char *path, flags_t flags) {
@@ -40,11 +36,12 @@ error_t layer_parse_file(const char *path, struct layer *layer) {
     size_t read_len;
     FILE *fin;
     
-    fin = fopen(path, "r");
+    fin = fopen(path, "rb");
     if (fin != NULL) {
-        read_len = fread(layer->tiles, sizeof(tile_t), MAP_SZ, fin);
+        read_len = fread(layer->tiles, 1, MAP_SZ, fin);
         fclose(fin);
         if (read_len) {
+            printf(" -> [layer_parse_file] Read %lu bytes\n", read_len);
             return EXIT_SUCCESS;        
         }
     }
