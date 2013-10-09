@@ -1,5 +1,5 @@
 /* @author Benjamin James Wright <bwright@cse.unsw.edu.au>
- * @author David Collien
+ * @author David Collien <dcollien@cse.unsw.edu.au>
  * @description A layer is a portion of a map that is rendered, we will be
  *  using painters algorithm to stich multiple layers into a map.
  */
