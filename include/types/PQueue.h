@@ -1,10 +1,16 @@
-typedef struct _pq PQueue;
+#ifndef PQUEUE_H
+#define PQUEUE_H
 
-PQueue new_PQueue(int maxSize);
+typedef struct _pq *PQueue;
+typedef void *pq_value_t;
 
-void delete_PQueue(PQueue pq);
+PQueue new_PQueue(void);
 
-void *remove_PQueue(PQueue pq);
+void destroy_PQueue(PQueue pq);
 
-void add_PQueue(PQueue pq, void *toAdd, int priority);
+pq_value_t remove_PQueue(PQueue pq);
 
+void add_PQueue(PQueue pq, pq_value_t toAdd, int priority);
+
+unsigned int size_PQueue(PQueue pq);
+#endif
