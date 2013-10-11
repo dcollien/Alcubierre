@@ -12,10 +12,6 @@ testDir = 'tests'
 
 runTarget = 'run'
 
-getFlags = subprocess.Popen(['sdl-config --cflags --libs sdl'], shell=True, stdout=subprocess.PIPE)
-out, err = getFlags.communicate()
-cFlags.append(out.replace('\n', ' '))
-
 tests = {
 	'types/testHashMap': ['types/HashMap.c'],
 	'types/testList': ['types/List.c'],
@@ -66,7 +62,14 @@ def make_tests():
 
 	return True
 
-if len(sys.argv) > 1 and sys.argv[1] == 'tests':
+
+getFlags = subprocess.Popen(['sdl-config --cflags --libs sdl'], shell=True, stdout=subprocess.PIPE)
+out, err = getFlags.communicate()
+cFlags.append(out.replace('\n', ' '))
+
+if err:
+	print 'Unable to run sdl-config'
+elif len(sys.argv) > 1 and sys.argv[1] == 'tests':
 	make_tests()
 else:
 	if make_tests():
