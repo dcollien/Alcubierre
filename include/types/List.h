@@ -2,18 +2,19 @@
 #define LIST_H
 #include <stdint.h>
 #include <stdbool.h>
+#include "types/any.h"
 
 typedef struct _list *List;
 
-List newList(void);
+List new_List(void);
 
 void destroy_List(List list);
 
-void prepend_List(List list, uintptr_t value);
-void append_List(List list, uintptr_t value);
+void prepend_List(List list, any_t value);
+void append_List(List list, any_t value);
 
-uintptr_t removeFirst_List(List list);
-uintptr_t removeLast_List(List list);
+any_t removeFirst_List(List list);
+any_t removeLast_List(List list);
 
 unsigned int size_List(List list);
 

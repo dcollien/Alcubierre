@@ -6,8 +6,8 @@
 typedef struct collisionNode collisionNode_t;
 
 struct collisionNode {
-   uintptr_t key;
-   uintptr_t value;
+   any_t key;
+   any_t value;
    collisionNode_t *next;
 };
 
@@ -28,7 +28,7 @@ HashMap new_HashMap(hashDelegate hashFunction, eqDelegate isEqual, size_t size) 
    map->array = malloc(sizeof(collisionNode_t *) * size);
    assert(map->array != NULL);
 
-   memset(map->array, (uintptr_t)NULL, sizeof(uintptr_t) * size);
+   memset(map->array, (any_t)NULL, sizeof(any_t) * size);
 
    map->hashFunction = hashFunction;
    map->isEqual = isEqual;
@@ -47,7 +47,7 @@ void destroy_HashMap(HashMap map) {
    free(map);
 }
 
-void set_HashMap(HashMap map, uintptr_t key, uintptr_t value) {
+void set_HashMap(HashMap map, any_t key, any_t value) {
    unsigned int hash = map->hashFunction(key) % map->size;
    collisionNode_t *prevNode;
    collisionNode_t *node = malloc(sizeof(collisionNode_t));
@@ -77,10 +77,10 @@ void set_HashMap(HashMap map, uintptr_t key, uintptr_t value) {
    }
 }
 
-uintptr_t get_HashMap(HashMap map, uintptr_t key) {
+any_t get_HashMap(HashMap map, any_t key) {
    unsigned int hash = map->hashFunction(key) % map->size;
    collisionNode_t *node = map->array[hash];
-   uintptr_t value;
+   any_t value;
 
    while (node != NULL && !map->isEqual(node->key, key)) {
       node = node->next;
@@ -89,14 +89,14 @@ uintptr_t get_HashMap(HashMap map, uintptr_t key) {
    if (map->isEqual(node->key, key)) {
       value = node->value;
    } else {
-      value = (uintptr_t)NULL;
+      value = (any_t)NULL;
    }
 
    return value;
 }
 
 
-bool in_HashMap(HashMap map, uintptr_t key) {
+bool in_HashMap(HashMap map, any_t key) {
    unsigned int hash = map->hashFunction(key) % map->size;
    collisionNode_t *node = map->array[hash];
 

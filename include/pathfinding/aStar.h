@@ -3,7 +3,7 @@
 
 #define NO_PATH (-1)
 
-typedef uintptr_t location_t
+typedef uintptr_t location_t;
 
 typedef location_t *path_t;
 

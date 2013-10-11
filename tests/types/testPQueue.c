@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
    int p3 = 3;
    int p4 = 1;
 
-   add_PQueue(pq, &v1, p1);
-   add_PQueue(pq, &v2, p2);
-   add_PQueue(pq, &v3, p3);
-   add_PQueue(pq, &v4, p4);
+   add_PQueue(pq, (any_t)&v1, p1);
+   add_PQueue(pq, (any_t)&v2, p2);
+   add_PQueue(pq, (any_t)&v3, p3);
+   add_PQueue(pq, (any_t)&v4, p4);
 
    assert(*(char *)remove_PQueue(pq) == v2);
    assert(*(char *)remove_PQueue(pq) == v3);

@@ -8,7 +8,7 @@
 typedef struct listNode *listNodePtr_t;
 
 struct listNode {
-	uintptr_t value;
+	any_t value;
 	listNodePtr_t next;
 	listNodePtr_t prev;
 };
@@ -19,9 +19,9 @@ struct _list {
 	unsigned int size;
 };
 
-static listNodePtr_t createNode(uintptr_t value);
+static listNodePtr_t createNode(any_t value);
 
-List newList(void) {
+List new_List(void) {
 	List list = malloc(sizeof(struct _list));
 	assert(list != NULL);
 
@@ -45,7 +45,7 @@ void destroy_List(List list) {
 	free(list);
 }
 
-void prepend_List(List list, uintptr_t value) {
+void prepend_List(List list, any_t value) {
 	listNodePtr_t node = createNode(value);
 	node->next = list->first;
 	node->prev = NULL;
@@ -59,7 +59,7 @@ void prepend_List(List list, uintptr_t value) {
 	++(list->size);
 }
 
-void append_List(List list, uintptr_t value) {
+void append_List(List list, any_t value) {
 	listNodePtr_t node = createNode(value);
 	node->next = NULL;
 	node->prev = list->last;
@@ -73,10 +73,10 @@ void append_List(List list, uintptr_t value) {
 	++(list->size);
 }
 
-uintptr_t removeFirst_List(List list) {
+any_t removeFirst_List(List list) {
 	assert(list->first != NULL);
 
-	uintptr_t value = list->first->value;
+	any_t value = list->first->value;
 
 	listNodePtr_t removedNode = list->first;
 	list->first = removedNode->next;
@@ -92,10 +92,10 @@ uintptr_t removeFirst_List(List list) {
 	return value;
 }
 
-uintptr_t removeLast_List(List list) {
+any_t removeLast_List(List list) {
 	assert(list->last != NULL);
 
-	uintptr_t value = list->last->value;
+	any_t value = list->last->value;
 
 	listNodePtr_t removedNode = list->last;
 	list->last = removedNode->prev;
@@ -115,7 +115,7 @@ unsigned int size_List(List list) {
 	return list->size;
 }
 
-static listNodePtr_t createNode(uintptr_t value) {
+static listNodePtr_t createNode(any_t value) {
 	listNodePtr_t node = malloc(sizeof(struct listNode));
 	assert(node != NULL);
 

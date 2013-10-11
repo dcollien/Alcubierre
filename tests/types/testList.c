@@ -15,8 +15,16 @@ int main(int argc, char *argv[]) {
 
    list = new_List();
 
-   // TODO
+   append_List(list, 42);
+   prepend_List(list, 12);
+   prepend_List(list, 81);
+   append_List(list, 69);
 
+   assert(removeFirst_List(list) == 81);
+   assert(removeFirst_List(list) == 12);
+   assert(removeLast_List(list) == 69);
+   assert(removeFirst_List(list) == 42);
+   
    destroy_List(list);
 
    printf("All Tests Passed\n");

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include "limits.h"
 #include "layer.h"
-#include "SDL.h"
+
+#include <SDL/SDL.h>
 
 static SDL_Surface *screen_create(const char *title, size_t width,
         size_t height);
@@ -13,7 +14,7 @@ int main(int argc, char *argv[]) {
 
    int running;
    struct layer *layer;
-   size_t i;
+   //size_t i;
 
    running = 1;
    printf("* [Initializing Map]\n");

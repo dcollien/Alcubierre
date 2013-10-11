@@ -1,8 +1,9 @@
 #ifndef PQUEUE_H
 #define PQUEUE_H
+#include "types/any.h"
 
 typedef struct _pq *PQueue;
-typedef void *pq_value_t;
+typedef any_t pq_value_t;
 
 PQueue new_PQueue(void);
 

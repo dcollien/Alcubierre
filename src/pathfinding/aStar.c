@@ -1,3 +1,4 @@
+#include "types/any.h"
 #include "types/PQueue.h"
 #include "types/HashMap.h"
 #include "types/List.h"
@@ -9,15 +10,17 @@
 #include <assert.h>
 #include <stdbool.h>
 
-typedef struct {
+typedef struct pathNode pathNode_t;
+
+struct pathNode {
    location_t location;
-   location_t cameFrom;
+   pathNode_t *cameFrom;
    int stepsToStart;
    int costToStart;
    int estimatedPathCost;
-} pathNode;
+};
 
-static int buildPath(pathNode *goalNode, path_t *path);
+static int buildPath(pathNode_t *goalNode, path_t *path);
 
 /**
  * @brief Finds the shortest path from a starting location to a location
@@ -49,8 +52,8 @@ int aStar_shortestPath(
    HashMap closedSet;
    PQueue openSet;
 
-   pathNode *currentNode;
-   pathNode *neighbourNode;
+   pathNode_t *currentNode;
+   pathNode_t *neighbourNode;
    expansion_t *neighbours;
    int numNeighbours;
    int i;
@@ -69,24 +72,24 @@ int aStar_shortestPath(
    closedSet = new_HashMap(hashFunction, isEqual, MAP_SIZE);
 
    // create a node for the starting location
-   currentNode = malloc(sizeof(pathNode));
+   currentNode = malloc(sizeof(pathNode_t));
    assert(currentNode != NULL);
 
    currentNode->location = start;
-   currentNode->cameFrom = (location_t)NULL;
+   currentNode->cameFrom = (pathNode_t *)NULL;
    currentNode->costToStart = 0;
    currentNode->stepsToStart = 0;
    currentNode->estimatedPathCost = heuristic(start, data);
 
-   append_List(pathNodes, currentNode);
+   append_List(pathNodes, (uintptr_t)currentNode);
 
    // a priority queue of unexplored nodes, ranked by cost
    openSet = new_PQueue();
-   add_PQueue(openSet, currentNode, -currentNode->estimatedPathCost);
+   add_PQueue(openSet, (pq_value_t)currentNode, -currentNode->estimatedPathCost);
 
    while (size_PQueue(openSet) > 0) {
       // remove the node on the best path so far, thought to be closest to the goal
-      currentNode = remove_PQueue(openSet);
+      currentNode = (pathNode_t *)remove_PQueue(openSet);
 
       // check if it's a goal, if so build the path
       if (goalCondition(currentNode->location, data)) {
@@ -107,26 +110,26 @@ int aStar_shortestPath(
          pathEstimate = costToStart + heuristic(neighbours[i].location, data);
 
          // see if we've been to this locaton before
-         neighbourNode = (pathNode *)get_HashMap(closedSet, neighbours[i].location);
+         neighbourNode = (pathNode_t *)get_HashMap(closedSet, neighbours[i].location);
 
          if (neighbourNode == NULL || pathEstimate < neighbourNode->estimatedPathCost) {
             // we haven't been here, or if we have this one's better
 
             // create a new node, save some info to it
-            neighbourNode = malloc(sizeof(pathNode));
+            neighbourNode = malloc(sizeof(pathNode_t));
             assert(neighbourNode != NULL);
 
             neighbourNode->location = neighbours[i].location;
-            neighbourNode->cameFrom = currentNode->location;
+            neighbourNode->cameFrom = currentNode;
             neighbourNode->stepsToStart = currentNode->stepsToStart + 1;
             neighbourNode->costToStart = costToStart;
             neighbourNode->estimatedPathCost = pathEstimate;
 
             // keep track of all nodes we've created
-            append_List(pathNodes, neighbourNode);
+            append_List(pathNodes, (any_t)neighbourNode);
 
             // add it to the open set, to explore further
-            add_PQueue(openSet, neighbourNode, -pathEstimate);
+            add_PQueue(openSet, (pq_value_t)neighbourNode, -pathEstimate);
          }
       }
 
@@ -136,7 +139,7 @@ int aStar_shortestPath(
 
    // clean up all nodes we created
    while (size_List(pathNodes) > 0) {
-      currentNode = (pathNode *)removeFirst_List(pathNodes);
+      currentNode = (pathNode_t *)removeFirst_List(pathNodes);
       free(currentNode);
    }
    destroy_List(pathNodes);
@@ -147,10 +150,10 @@ int aStar_shortestPath(
 }
 
 // backtrack to build a path array
-static int buildPath(pathNode *goalNode, path_t *path) {
+static int buildPath(pathNode_t *goalNode, path_t *path) {
    int pathLength;
    int i;
-   pathNode *node = goalNode;
+   pathNode_t *node = goalNode;
 
 
    pathLength = node->stepsToStart + 1;

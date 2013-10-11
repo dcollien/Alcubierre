@@ -7,7 +7,7 @@
 
 #include "types/HashMap.h"
 
-unsigned int stringHash(uintptr_t value) {
+unsigned int stringHash(any_t value) {
    char *string = (char *)value;
    unsigned int hash = 5381;
    int c;
@@ -19,7 +19,7 @@ unsigned int stringHash(uintptr_t value) {
    return hash;
 }
 
-bool stringEq(uintptr_t a, uintptr_t b) {
+bool stringEq(any_t a, any_t b) {
    return strcmp((char *)a, (char *)b) == 0;
 }
 
@@ -41,14 +41,14 @@ int main(int argc, char *argv[]) {
    char k3[] = "cat";
    char k4[] = "cat";
 
-   set_HashMap(map, (uintptr_t)k1, (uintptr_t)v1);
-   set_HashMap(map, (uintptr_t)k2, (uintptr_t)v2);
-   set_HashMap(map, (uintptr_t)k3, (uintptr_t)v3);
-   set_HashMap(map, (uintptr_t)k4, (uintptr_t)v4);
+   set_HashMap(map, (any_t)k1, (any_t)v1);
+   set_HashMap(map, (any_t)k2, (any_t)v2);
+   set_HashMap(map, (any_t)k3, (any_t)v3);
+   set_HashMap(map, (any_t)k4, (any_t)v4);
 
-   assert((char)get_HashMap(map, (uintptr_t)"aardvark") == v1);
-   assert((char)get_HashMap(map, (uintptr_t)"badger") == v2);
-   assert((char)get_HashMap(map, (uintptr_t)"cat") == v4);
+   assert((char)get_HashMap(map, (any_t)"aardvark") == v1);
+   assert((char)get_HashMap(map, (any_t)"badger") == v2);
+   assert((char)get_HashMap(map, (any_t)"cat") == v4);
 
    destroy_HashMap(map);
 
