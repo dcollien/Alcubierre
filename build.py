@@ -7,10 +7,14 @@ cc = 'clang' # 'gcc'
 buildDir = 'build'
 srcDir = 'src'
 incDir = 'include'
-cFlags = '-lsdl -lSDLmain'
+cFlags = []
 testDir = 'tests'
 
 runTarget = 'run'
+
+getFlags = subprocess.Popen(['sdl-config --cflags --libs sdl'], shell=True, stdout=subprocess.PIPE)
+out, err = getFlags.communicate()
+cFlags.append(out.replace('\n', ' '))
 
 tests = {
 	'types/testHashMap': ['types/HashMap.c'],
@@ -32,7 +36,7 @@ def build(target, srcs):
 		'-Wall -Werror -O2',
 		'-o ' + os.path.join(buildDir, target),
 		'-I./' + incDir,
-		cFlags,
+		' '.join(cFlags),
 		' '.join(srcs)
 	]
 
