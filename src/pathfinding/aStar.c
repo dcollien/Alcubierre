@@ -28,7 +28,8 @@ static int buildPath(location_t goalNode, HashMap cameFrom, path_t *path);
  * @param goalCondition the condition a location must satisfy to be a goal
  * @param path a pointer to the path array that will be allocated and populated
  *             by this function. This array must be freed externally.
- * @param expander a function which expands a location, specifying its neighbours
+ * @param expander a function which expands a location, specifying its neighbours.
+                   This shortestPath function frees the allocated (expansion_t *) array.
  * @param heuristic a function that estimates the distance of a given location to the
  *                  nearest goal location
  * @param hashFunction a hashing function for a location
@@ -96,6 +97,7 @@ int aStar_shortestPath(
 
    // initialise start positions g and f scores
    currentData = malloc(sizeof(locationData_t));
+   assert(currentData != NULL);
    append_List(allocatedData, (any_t)currentData);
 
    currentData->cameFrom = (location_t)NULL;
@@ -155,6 +157,7 @@ int aStar_shortestPath(
             // allocate memory for this neighbour's data if none exists already
             if (neighbourData == NULL) {
                neighbourData = malloc(sizeof(locationData_t));
+               assert(neighbourData != NULL);
                append_List(allocatedData, (any_t)neighbourData);
             }
 
@@ -206,6 +209,7 @@ static int buildPath(location_t goalNode, HashMap locationDataMap, path_t *path)
 
    pathLength = locationData->step + 1;
    *path = malloc(sizeof(location_t) * pathLength);
+   assert(*path != NULL);
 
    i = 0;
    while (locationData->cameFrom != (location_t)NULL) {

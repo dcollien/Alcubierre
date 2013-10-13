@@ -4,10 +4,13 @@
 
 typedef struct _pq *PQueue;
 
+// Constructor and Deconstructor
 PQueue new_PQueue(void);
 
 void destroy_PQueue(PQueue pq);
 
+
+// Methods
 any_t remove_PQueue(PQueue pq);
 
 void add_PQueue(PQueue pq, any_t toAdd, int priority);

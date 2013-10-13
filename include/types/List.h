@@ -6,10 +6,13 @@
 
 typedef struct _list *List;
 
+
+// Constructor and Deconstructor
 List new_List(void);
 
 void destroy_List(List list);
 
+// Methods
 void prepend_List(List list, any_t value);
 void append_List(List list, any_t value);
 
