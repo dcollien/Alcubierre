@@ -7,7 +7,7 @@ cc = 'clang' # 'gcc'
 buildDir = 'build'
 srcDir = 'src'
 incDir = 'include'
-cFlags = []
+cFlags = ['-lm']
 testDir = 'tests'
 
 runTarget = 'run'

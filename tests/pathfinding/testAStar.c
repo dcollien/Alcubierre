@@ -210,5 +210,9 @@ int main(int argc, char *argv[]) {
 
    printMaze(&maze);
 
+   assert(pathLength == 32);
+
+   printf("All Tests Passed\n");
+
    return EXIT_SUCCESS;
 }

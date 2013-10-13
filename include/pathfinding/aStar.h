@@ -1,3 +1,6 @@
+#ifndef ASTAR_H
+#define ASTAR_H
+
 #include <stdbool.h>
 #include "types/HashMap.h"
 
@@ -53,3 +56,5 @@ int aStar_shortestPath(
 
 	void *data
 );
+
+#endif
