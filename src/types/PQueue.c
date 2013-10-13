@@ -1,12 +1,13 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "types/PQueue.h"
 
 #define START_SIZE 128
 
 typedef struct {
-   pq_value_t value;
+   any_t value;
    int priority;
 } pq_node;
 
@@ -34,16 +35,19 @@ PQueue new_PQueue(void) {
 }
 
 void destroy_PQueue(PQueue pq) {
+   while (pq->length > 0) {
+      remove_PQueue(pq);
+   }
    free(pq->elements);
    free(pq);
 }
 
-pq_value_t remove_PQueue(PQueue pq) {
+any_t remove_PQueue(PQueue pq) {
    assert(pq->length > 0);
 
    // store the top value in the heap
    pq_node_ptr removed = pq->elements[0];
-   pq_value_t removedValue = removed->value;
+   any_t removedValue = removed->value;
 
    free(removed);
 
@@ -57,10 +61,18 @@ pq_value_t remove_PQueue(PQueue pq) {
    return removedValue;
 }
 
-void add_PQueue(PQueue pq, pq_value_t toAdd, int priority) {
+void add_PQueue(PQueue pq, any_t toAdd, int priority) {
    int i;
    int parent;
-   pq_node_ptr *heap = pq->elements;
+
+   pq_node_ptr *heap;
+
+   if (pq->length >= pq->size) {
+      pq->size *= 2;
+      pq->elements = realloc(pq->elements, sizeof(pq_node_ptr) * pq->size);
+   }
+
+   heap = pq->elements;
 
    // create node and store properties
    pq_node_ptr newNode = malloc(sizeof(pq_node));
@@ -69,15 +81,7 @@ void add_PQueue(PQueue pq, pq_value_t toAdd, int priority) {
    newNode->priority = priority;
    newNode->value = toAdd;
 
-   if (pq->length >= pq->size) {
-      pq->size *= 2;
-      pq->elements = realloc(pq->elements, pq->size);
-   }
-
-   // add to the end of the heap array
-   heap[pq->length] = newNode;
    ++(pq->length);
-
    i = pq->length - 1;
 
    parent = i/2;
@@ -95,6 +99,41 @@ void add_PQueue(PQueue pq, pq_value_t toAdd, int priority) {
 
 unsigned int size_PQueue(PQueue pq) {
    return pq->length;
+}
+
+void printPriorities_PQueue(PQueue pq, anyPrintDelegate printer) {
+   int i;
+   int space;
+   int spacing;
+   int col;
+   int rowLength;
+
+   spacing = pq->length/2;
+   rowLength = 1;
+   i = 0;
+   while (i < pq->length) {
+
+      for (col = 0; col < rowLength && i < pq->length; ++col) {
+         for (space = 0; space != spacing; ++space) {
+            printf("   ");
+            if (printer != NULL) {
+               printer((any_t)NULL);
+            }
+         }
+         
+         printf("%3d", pq->elements[i]->priority);
+
+         if (printer != NULL) {
+            printer(pq->elements[i]->value);
+         }
+
+         i++;
+      }
+
+      spacing /= 2;
+      rowLength *= 2;
+      printf("\n");
+   }
 }
 
 static void heapify(PQueue pq, int i) {

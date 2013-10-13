@@ -4,6 +4,14 @@
 
 #include "types/PQueue.h"
 
+void printTest(any_t val) {
+   if ((void *)val == NULL) {
+      printf("   ");
+   } else {
+      printf("%3d", (int)val);
+   }
+}
+
 int main(int argc, char *argv[]) {
    PQueue pq;
 
@@ -25,6 +33,8 @@ int main(int argc, char *argv[]) {
    add_PQueue(pq, (any_t)&v2, p2);
    add_PQueue(pq, (any_t)&v3, p3);
    add_PQueue(pq, (any_t)&v4, p4);
+
+   printPriorities_PQueue(pq, printTest);
 
    assert(*(char *)remove_PQueue(pq) == v2);
    assert(*(char *)remove_PQueue(pq) == v3);

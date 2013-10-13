@@ -47,6 +47,25 @@ void destroy_HashMap(HashMap map) {
    free(map);
 }
 
+void remove_HashMap(HashMap map, any_t key) {
+   unsigned int hash = map->hashFunction(key) % map->size;
+   collisionNode_t *node = map->array[hash];
+   collisionNode_t *prev = NULL;
+
+   while (node != NULL && !map->isEqual(node->key, key)) {
+      node = node->next;
+   }
+
+   if (node != NULL && map->isEqual(node->key, key)) {
+      if (prev == NULL) {
+         map->array[hash] = node->next;
+      } else {
+         prev->next = node->next;
+      }
+      free(node);
+   }
+}
+
 void set_HashMap(HashMap map, any_t key, any_t value) {
    unsigned int hash = map->hashFunction(key) % map->size;
    collisionNode_t *prevNode;
@@ -86,10 +105,10 @@ any_t get_HashMap(HashMap map, any_t key) {
       node = node->next;
    }
 
-   if (map->isEqual(node->key, key)) {
-      value = node->value;
-   } else {
+   if (node == NULL || !map->isEqual(node->key, key)) {
       value = (any_t)NULL;
+   } else {
+      value = node->value;
    }
 
    return value;

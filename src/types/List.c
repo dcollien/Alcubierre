@@ -89,6 +89,8 @@ any_t removeFirst_List(List list) {
 		list->first->prev = NULL;
 	}
 
+	--(list->size);
+
 	return value;
 }
 
@@ -107,6 +109,8 @@ any_t removeLast_List(List list) {
 	} else {
 		list->last->next = NULL;
 	}
+
+	--(list->size);
 
 	return value;
 }

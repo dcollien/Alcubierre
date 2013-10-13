@@ -49,7 +49,12 @@ int main(int argc, char *argv[]) {
    assert((char)get_HashMap(map, (any_t)"aardvark") == v1);
    assert((char)get_HashMap(map, (any_t)"badger") == v2);
    assert((char)get_HashMap(map, (any_t)"cat") == v4);
+   assert((void *)get_HashMap(map, (any_t)"zebra") == NULL);
 
+   remove_HashMap(map, (any_t)k3);
+   
+   assert((void *)get_HashMap(map, (any_t)"cat") == NULL);
+   
    destroy_HashMap(map);
 
    printf("All Tests Passed\n");

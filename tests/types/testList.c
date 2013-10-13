@@ -19,11 +19,13 @@ int main(int argc, char *argv[]) {
    prepend_List(list, 12);
    prepend_List(list, 81);
    append_List(list, 69);
-
+   assert(size_List(list) == 4);
+   
    assert(removeFirst_List(list) == 81);
    assert(removeFirst_List(list) == 12);
    assert(removeLast_List(list) == 69);
    assert(removeFirst_List(list) == 42);
+   assert(size_List(list) == 0);
    
    destroy_List(list);
 

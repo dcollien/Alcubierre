@@ -12,15 +12,14 @@
 
 typedef struct pathNode pathNode_t;
 
-struct pathNode {
-   location_t location;
-   pathNode_t *cameFrom;
-   int stepsToStart;
-   int costToStart;
-   int estimatedPathCost;
-};
+typedef struct {
+   location_t cameFrom;
+   int fScore;
+   int gScore;
+   int step;
+} locationData_t;
 
-static int buildPath(pathNode_t *goalNode, path_t *path);
+static int buildPath(location_t goalNode, HashMap cameFrom, path_t *path);
 
 /**
  * @brief Finds the shortest path from a starting location to a location
@@ -49,87 +48,129 @@ int aStar_shortestPath(
    
    void *data
 ) {
-   HashMap closedSet;
-   PQueue openSet;
+   PQueue openPriorities;
 
-   pathNode_t *currentNode;
-   pathNode_t *neighbourNode;
+   HashMap openSet;
+   HashMap closedSet;
+   
+   HashMap locationDataMap;
+
+   List allocatedData;
+
    expansion_t *neighbours;
+   expansion_t expansion;
+
    int numNeighbours;
    int i;
 
-   int costToStart;
-   int pathEstimate;
+   int tentativeG;
+   int tentativeF;
+
+   bool isInOpenSet;
+
+   location_t current;
+   location_t neighbour;
 
    int pathLength = NO_PATH;
 
-   List pathNodes;
+   locationData_t *currentData;
+   locationData_t *neighbourData;
 
-   // a list keeping track of all allocated nodes
-   pathNodes = new_List();
 
-   // a hashmap of visited nodes
-   closedSet = new_HashMap(hashFunction, isEqual, MAP_SIZE);
 
-   // create a node for the starting location
-   currentNode = malloc(sizeof(pathNode_t));
-   assert(currentNode != NULL);
+   // hashmap of f and g scores for each location, and where they came from
+   locationDataMap = new_HashMap(hashFunction, isEqual, MAP_SIZE);
 
-   currentNode->location = start;
-   currentNode->cameFrom = (pathNode_t *)NULL;
-   currentNode->costToStart = 0;
-   currentNode->stepsToStart = 0;
-   currentNode->estimatedPathCost = heuristic(start, data);
+   // list of all allocated location data
+   allocatedData = new_List();
 
-   append_List(pathNodes, (uintptr_t)currentNode);
 
    // a priority queue of unexplored nodes, ranked by cost
-   openSet = new_PQueue();
-   add_PQueue(openSet, (pq_value_t)currentNode, -currentNode->estimatedPathCost);
+   // and a hashmap of the frontier nodes
+   openPriorities = new_PQueue();
+   openSet = new_HashMap(hashFunction, isEqual, MAP_SIZE);
 
-   while (size_PQueue(openSet) > 0) {
+   // a hashmap of the best expanded nodes
+   closedSet = new_HashMap(hashFunction, isEqual, MAP_SIZE);
+
+
+   // initialise start positions g and f scores
+   currentData = malloc(sizeof(locationData_t));
+   append_List(allocatedData, (any_t)currentData);
+
+   currentData->cameFrom = (location_t)NULL;
+   currentData->gScore = 0;
+   currentData->fScore = currentData->gScore + heuristic(start, data);
+   currentData->step = 0;
+
+   set_HashMap(locationDataMap, (any_t)start, (any_t)currentData);
+
+
+   // add the first node to the open set
+   add_PQueue(openPriorities, (any_t)start, -(currentData->fScore));
+   set_HashMap(openSet, (any_t)start, (any_t)true);
+
+   while (size_PQueue(openPriorities) > 0) {
       // remove the node on the best path so far, thought to be closest to the goal
-      currentNode = (pathNode_t *)remove_PQueue(openSet);
+      current = (location_t)remove_PQueue(openPriorities);
+      remove_HashMap(openSet, (any_t)current);
 
       // check if it's a goal, if so build the path
-      if (goalCondition(currentNode->location, data)) {
-         pathLength = buildPath(currentNode, path);
+      if (goalCondition(current, data)) {
+         pathLength = buildPath(current, locationDataMap, path);
          break;
       }
 
-      // mark this node as visited, saving it to the closed set
-      set_HashMap(closedSet, (uintptr_t)currentNode->location, (uintptr_t)currentNode);
+      // mark this node as visited, saving it to the closed set, keyed by the location
+      set_HashMap(closedSet, (any_t)current, (any_t)true);
+
+      // retrieve data for current node
+      currentData = (locationData_t *)get_HashMap(locationDataMap, (any_t)current);
 
       // expand this node and find its neighbours
-      numNeighbours = expander(currentNode->location, neighbours, data);
+      numNeighbours = expander(current, &neighbours, data);
 
       for (i = 0; i != numNeighbours; ++i) {
+         expansion = neighbours[i];
+         neighbour = expansion.location;
+
+         // retrieve data for neighbour, if it exists
+         neighbourData = (locationData_t *)get_HashMap(locationDataMap, (any_t)neighbour);
+
          // for each neighbour determine the cost so far and estimated total
          // path cost
-         costToStart = currentNode->costToStart + neighbours[i].cost;
-         pathEstimate = costToStart + heuristic(neighbours[i].location, data);
+         tentativeG = currentData->gScore + expansion.cost;
+         tentativeF = tentativeG + heuristic(neighbour, data);
 
-         // see if we've been to this locaton before
-         neighbourNode = (pathNode_t *)get_HashMap(closedSet, neighbours[i].location);
+         if (in_HashMap(closedSet, (any_t)neighbour) && tentativeF >= neighbourData->fScore) {
+            // already expanded (and last time was better)
+            continue;
+         }
 
-         if (neighbourNode == NULL || pathEstimate < neighbourNode->estimatedPathCost) {
-            // we haven't been here, or if we have this one's better
+         isInOpenSet = in_HashMap(openSet, (any_t)neighbour);
 
-            // create a new node, save some info to it
-            neighbourNode = malloc(sizeof(pathNode_t));
-            assert(neighbourNode != NULL);
+         if (!isInOpenSet || tentativeF < neighbourData->fScore) {
+            // we haven't added this node yet, or if we did, it wasn't as good
 
-            neighbourNode->location = neighbours[i].location;
-            neighbourNode->cameFrom = currentNode;
-            neighbourNode->stepsToStart = currentNode->stepsToStart + 1;
-            neighbourNode->costToStart = costToStart;
-            neighbourNode->estimatedPathCost = pathEstimate;
+            // allocate memory for this neighbour's data if none exists already
+            if (neighbourData == NULL) {
+               neighbourData = malloc(sizeof(locationData_t));
+               append_List(allocatedData, (any_t)neighbourData);
+            }
 
-            // keep track of all nodes we've created
-            append_List(pathNodes, (any_t)neighbourNode);
+            // store the info for this expanded neighbour
+            neighbourData->cameFrom = current;
+            neighbourData->gScore = tentativeG;
+            neighbourData->fScore = tentativeF;
+            neighbourData->step = currentData->step + 1;
 
-            // add it to the open set, to explore further
-            add_PQueue(openSet, (pq_value_t)neighbourNode, -pathEstimate);
+            set_HashMap(locationDataMap, (any_t)neighbour, (any_t)neighbourData);
+
+            if (!isInOpenSet) {
+               // add it to the open set, to explore further
+               add_PQueue(openPriorities, (any_t)neighbour, -tentativeF);
+               set_HashMap(openSet, (any_t)neighbour, (any_t)true);
+            }
          }
       }
 
@@ -137,33 +178,45 @@ int aStar_shortestPath(
       free(neighbours);
    }
 
-   // clean up all nodes we created
-   while (size_List(pathNodes) > 0) {
-      currentNode = (pathNode_t *)removeFirst_List(pathNodes);
-      free(currentNode);
-   }
-   destroy_List(pathNodes);
+   destroy_HashMap(openSet);
+   destroy_PQueue(openPriorities);
    destroy_HashMap(closedSet);
-   destroy_PQueue(openSet);
+   destroy_HashMap(locationDataMap);
+
+   // free all location data
+   while (size_List(allocatedData) != 0) {
+      currentData = (locationData_t *)removeFirst_List(allocatedData);
+      free(currentData);
+   }
+   destroy_List(allocatedData);
 
    return pathLength;
 }
 
 // backtrack to build a path array
-static int buildPath(pathNode_t *goalNode, path_t *path) {
+static int buildPath(location_t goalNode, HashMap locationDataMap, path_t *path) {
    int pathLength;
    int i;
-   pathNode_t *node = goalNode;
 
+   location_t current;
+   locationData_t *locationData;
 
-   pathLength = node->stepsToStart + 1;
+   current = goalNode;
+   locationData = (locationData_t *)get_HashMap(locationDataMap, (any_t)current);
+
+   pathLength = locationData->step + 1;
    *path = malloc(sizeof(location_t) * pathLength);
+
    i = 0;
-   while (node != NULL) {
-      *path[pathLength-i-1] = node->location;
-      node = node->cameFrom;
+   while (locationData->cameFrom != (location_t)NULL) {
+      (*path)[pathLength-i-1] = current;
+      
+      current = locationData->cameFrom;
+      locationData = (locationData_t *)get_HashMap(locationDataMap, (any_t)current);
+      assert(locationData != NULL);
       ++i;
    }
+   (*path)[pathLength-i-1] = current;
 
    return pathLength;
 }

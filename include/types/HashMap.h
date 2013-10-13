@@ -13,6 +13,9 @@ HashMap new_HashMap(hashDelegate hashFunction, eqDelegate isEqual, size_t size);
 
 void destroy_HashMap(HashMap map);
 
+
+void remove_HashMap(HashMap map, any_t key);
+
 void set_HashMap(HashMap map, any_t key, any_t value);
 
 any_t get_HashMap(HashMap map, any_t key);
