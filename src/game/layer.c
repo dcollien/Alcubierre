@@ -7,7 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "limits.h"
-#include "layer.h"
+ 
+#include "game/layer.h"
 
 static error_t layer_parse_file(const char *path, struct layer *layer);
 
