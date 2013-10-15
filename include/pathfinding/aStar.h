@@ -2,6 +2,7 @@
 #define ASTAR_H
 
 #include <stdbool.h>
+#include "types/any.h"
 #include "types/HashMap.h"
 
 #define NO_PATH (-1)
@@ -52,7 +53,7 @@ int aStar_shortestPath(
 	expanderDelegate expander,
 	heuristicDelegate heuristic,
 	hashDelegate hashFunction,
-	eqDelegate isEqual,
+	anyEqDelegate isEqual,
 
 	void *data
 );

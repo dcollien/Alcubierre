@@ -8,48 +8,52 @@
 #include "limits.h"
 
 #include "game/Game.h"
+#include "game/Input.h"
 
 #define WINDOW_TITLE "Alcubierre"
 
-static SDL_Surface *screen_create(const char *title, size_t width,
-   size_t height);
+static SDL_Surface *screen_create(
+   const char *title, 
+   size_t width,
+   size_t height
+);
 
 int main(int argc, char *argv[]) {
    SDL_Surface *screen;
-   SDL_Event event;
+
+   Input input;
    Game game;
 
-   int running;
+   bool isRunning;
 
    Uint32 lastUpdate;
    Uint32 thisUpdate;
    Uint32 dt;
    //size_t i;
 
-
+   input = new_Input();
    game = new_Game();
    assert(game != NULL);
 
-   running = true;
+   isRunning = true;
    
    screen = screen_create(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
-   while (running) {
-      while (SDL_PollEvent(&event)) {
-         if (event.type == SDL_QUIT) { 
-            running = false;
-            break;
-         }
+   while (isRunning) {
+      if (!pollEvents_Input(input)) {
+         isRunning = false;
       }
 
       thisUpdate = SDL_GetTicks();
       dt = thisUpdate - lastUpdate;
       lastUpdate = thisUpdate;
 
-      if (update_Game(game, dt)) {
+      if (update_Game(game, dt, input)) {
          draw_Game(game, screen);
       }
-
+      
       SDL_Flip(screen);
+      
+      clearPressed_Input(input);
    }
 
    SDL_Quit();

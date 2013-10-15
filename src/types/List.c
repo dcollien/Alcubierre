@@ -115,6 +115,24 @@ any_t removeLast_List(List list) {
 	return value;
 }
 
+
+bool in_List(List list, any_t value, anyEqDelegate isEqualFunc) {
+	bool isFound = false;
+	listNodePtr_t currentNode = list->first;
+
+	while (currentNode != NULL && !isFound) {
+		if (isEqualFunc == NULL && currentNode->value == value) {
+			isFound = true;
+		} else if (isEqualFunc != NULL && isEqualFunc(currentNode->value, value)) {
+			isFound = true;
+		}
+
+		currentNode = currentNode->next;
+	}
+
+	return isFound;
+}
+
 unsigned int size_List(List list) {
 	return list->size;
 }

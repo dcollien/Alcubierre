@@ -19,6 +19,8 @@ void append_List(List list, any_t value);
 any_t removeFirst_List(List list);
 any_t removeLast_List(List list);
 
+bool in_List(List list, any_t value, anyEqDelegate isEqualFunc);
+
 unsigned int size_List(List list);
 
 #endif

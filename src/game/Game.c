@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <stdio.h>
+
 #include <SDL/SDL.h>
 #include "game/Game.h"
 #include "game/layer.h"
@@ -28,8 +30,29 @@ void destroy_Game(Game game) {
 	free(game);
 }
 
-bool update_Game(Game game, Uint32 dt) {
+bool update_Game(Game game, Uint32 dt, Input input) {
 	bool needsRedraw = true;
+	mouse_t mouse = mouse_Input(input);
+
+	if (mouse.leftPressed) {
+		printf("Mouse Pressed\n");
+	}
+	if (mouse.leftDown) {
+		printf("Mouse Down at (%d, %d)\n", mouse.x, mouse.y);
+	}
+	if (mouse.leftReleased) {
+		printf("Mouse Released\n");
+	}
+
+	if (isPressed_Input(input, SDLK_b)) {
+		printf("b Pressed\n");
+	}
+	if (isDown_Input(input, SDLK_b)) {
+		printf("b Down\n");
+	}
+	if (isReleased_Input(input, SDLK_b)) {
+		printf("b Released\n");
+	}
 
 	return needsRedraw;
 }

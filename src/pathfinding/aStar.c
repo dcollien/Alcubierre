@@ -4,7 +4,7 @@
 #include "types/List.h"
 #include "pathfinding/aStar.h"
 
-#define MAP_SIZE 1024
+#define MAP_SIZE 1279
 
 #include <stdlib.h>
 #include <assert.h>
@@ -45,7 +45,7 @@ int aStar_shortestPath(
    expanderDelegate expander,
    heuristicDelegate heuristic,
    hashDelegate hashFunction,
-   eqDelegate isEqual,
+   anyEqDelegate isEqual,
    
    void *data
 ) {
