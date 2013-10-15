@@ -2,7 +2,8 @@ import os
 import sys
 import subprocess
 
-cc = 'clang' # 'gcc'
+#cc = 'clang' # 'gcc'
+cc = 'gcc'
 
 buildDir = 'build'
 srcDir = 'src'

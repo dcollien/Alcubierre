@@ -31,7 +31,6 @@ bool v_eq(vector2d_t v1, vector2d_t v2) {
 }
 
 
-
 vector2d_t v_rotate(vector2d_t v1, vector2d_t v2) {
 	return v_(v1.x * v2.x - v1.y * v2.y, v1.x * v2.y + v1.y * v2.x);
 }
