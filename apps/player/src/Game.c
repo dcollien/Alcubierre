@@ -8,11 +8,13 @@
 #include "core/Game.h"
 #include "state/layer.h"
 
+#include "window.h"
+
 struct _game {
    struct layer *layer;
 };
 
-Game new_Game(char *title) {
+Game new_Game(void) {
 	Game game = malloc(sizeof(struct _game));
 	assert(game != NULL);
 
@@ -24,9 +26,18 @@ Game new_Game(char *title) {
 		return NULL;
 	}
 
-	strncpy(title, "Alcubierre", TITLE_LENGTH);
-
 	return game;
+}
+
+windowInfo_t getWindow_Game(Game game) {
+	windowInfo_t window;
+
+	window.width = WINDOW_WIDTH;
+	window.height = WINDOW_HEIGHT;
+
+	strncpy(window.title, WINDOW_TITLE, TITLE_LENGTH);
+
+	return window;
 }
 
 void destroy_Game(Game game) {

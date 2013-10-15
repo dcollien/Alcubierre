@@ -20,7 +20,7 @@ int startGame(void) {
 
    Input input;
    Game game;
-   char title[TITLE_LENGTH];
+   windowInfo_t windowInfo;
 
    bool isRunning;
 
@@ -30,13 +30,15 @@ int startGame(void) {
    //size_t i;
 
    input = new_Input();
-   game = new_Game(title);
-   
+   game = new_Game();
+
+   windowInfo = getWindow_Game(game);
+
    assert(game != NULL);
 
    isRunning = true;
    
-   screen = screen_create(title, WINDOW_WIDTH, WINDOW_HEIGHT);
+   screen = screen_create(windowInfo.title, windowInfo.width, windowInfo.height);
    while (isRunning) {
       if (!pollEvents_Input(input)) {
          isRunning = false;

@@ -9,8 +9,6 @@
 
 #define TILE_SZ 32          // The size of the tile in pixels
 #define MAP_SZ (32*32)      // The size of the map in tiles.
-#define WINDOW_HEIGHT 768   // Height of the window.
-#define WINDOW_WIDTH  1024  // Width of the window.
 
 #endif /* ALC_LIMITS_H_ */
 
