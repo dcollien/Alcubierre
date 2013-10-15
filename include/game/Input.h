@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include <SDL/SDL.h>
-#include "math/vector2d.h"
 
 typedef struct _input *Input;
 
