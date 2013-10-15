@@ -4,11 +4,10 @@
 #include <assert.h>
 
 #include <SDL/SDL.h>
-
 #include "core/limits.h"
-
-#include "state/Game.h"
 #include "io/Input.h"
+
+#include "Game.h"
 
 #define WINDOW_TITLE "Alcubierre"
 
