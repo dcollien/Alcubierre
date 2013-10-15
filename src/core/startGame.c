@@ -30,9 +30,8 @@ int startGame(void) {
    //size_t i;
 
    input = new_Input();
-   game = new_Game();
-
-   titleOf_Game(game, title);
+   game = new_Game(title);
+   
    assert(game != NULL);
 
    isRunning = true;

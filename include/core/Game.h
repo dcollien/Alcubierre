@@ -9,10 +9,9 @@
 
 typedef struct _game *Game;
 
-Game new_Game(void);
+Game new_Game(char *title);
 void destroy_Game(Game game);
 
-void titleOf_Game(Game game, char *title);
 bool update_Game(Game game, Uint32 dt, Input input);
 void draw_Game(Game game, SDL_Surface *screen);
 
