@@ -5,6 +5,11 @@
 #define NET_PLAYER_ADDRESS 1
 
 typedef int net_address_t;
+typedef struct protocol protocol_t;
+
+struct protocol {
+	//
+}; 
 
 /**
  * @brief Sends a message in the required protocol over the network to the

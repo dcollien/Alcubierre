@@ -1,5 +1,5 @@
-#include "core/gameStart.h"
+#include "core/startGame.h"
 
 int main(int argc, char *argv[]) {
-   return gameStart();
+   return startGame();
 }
