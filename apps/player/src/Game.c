@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include <SDL/SDL.h>
-#include "state/Game.h"
+#include "core/Game.h"
 #include "state/layer.h"
 
 struct _game {
@@ -28,6 +28,10 @@ Game new_Game(void) {
 
 void destroy_Game(Game game) {
 	free(game);
+}
+
+void titleOf_Game(Game game, char *title) {
+	strncpy(title, "Alcubierre", TITLE_LENGTH);
 }
 
 bool update_Game(Game game, Uint32 dt, Input input) {
