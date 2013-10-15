@@ -30,7 +30,7 @@ HashMap new_HashMap(hashDelegate hashFunction, anyEqDelegate isEqual, size_t siz
    map->array = malloc(sizeof(collisionNode_t *) * size);
    assert(map->array != NULL);
 
-   memset(map->array, (int)NULL, sizeof(collisionNode_t *) * size);
+   memset(map->array, (uintptr_t)NULL, sizeof(collisionNode_t *) * size);
 
    map->hashFunction = hashFunction;
    map->isEqual = isEqual;
