@@ -19,4 +19,5 @@ obj/%.o: %.c
 	${CPP} -c -o $@ ${CFLAGS} $<
 
 clean:
-	rm ./obj/*.o
+	rm ../libs/*
+	rm obj/*.o

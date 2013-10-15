@@ -1,2 +1,2 @@
 all:
-	gcc -I../include -I../../../include -L../../../lib -o ../../../bin/player main.c `sdl-config --cflags --libs`
+	gcc -I../include -I../../../include  -o ../../../bin/player main.c `sdl-config --cflags --libs` ../../../lib/libAlcubierre.a
