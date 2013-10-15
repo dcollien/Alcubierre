@@ -20,7 +20,7 @@ int startGame(void) {
 
    Input input;
    Game game;
-   char *title[TITLE_LENGTH];
+   char title[TITLE_LENGTH];
 
    bool isRunning;
 
