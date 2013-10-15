@@ -6,9 +6,9 @@
 
 void printTest(any_t val) {
    if ((void *)val == NULL) {
-      printf("   ");
+      printf("  ");
    } else {
-      printf("%3d", (int)val);
+      printf(" %c", *(char *)val);
    }
 }
 
