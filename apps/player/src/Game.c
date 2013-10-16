@@ -18,9 +18,9 @@ struct _game {
    World *world;
    vector2d_t cursor;
    bool isDragging;
-   Sprite *test_sprite;
+   Sprite *crew[5];
    int frame, last_x, last_y;
-   int id, layer;
+   int id, layer, crew_id;
 };
 
 Game new_Game(void) {
@@ -35,14 +35,20 @@ Game new_Game(void) {
 		return NULL;
 	}
 
+    game->crew_id = 0;
     game->frame = 0;
 	game->cursor = v_(0,0);
 	game->isDragging = false;
-    game->test_sprite = create_Sprite("../media/sprites/dudebro_blonde.png");
+    game->crew[0] = create_Sprite("../media/sprites/dudebro_blonde.png");
+    game->crew[1] = create_Sprite("../media/sprites/golem_alien_blue.png");
+    game->crew[2] = create_Sprite("../media/sprites/lizard_alien_purple.png");
+    game->crew[3] = create_Sprite("../media/sprites/mysterious_alien.png");
+    game->crew[4] = create_Sprite("../media/sprites/purple_alien_longhair.png");
+
     game->last_x = 10;
     game->last_y = 10;
 
-    assert(game->test_sprite != NULL);
+    assert(game->crew[game->crew_id] != NULL);
 
 	return game;
 }
@@ -59,7 +65,7 @@ windowInfo_t getWindow_Game(Game game) {
 }
 
 void destroy_Game(Game game) {
-    destroy_Sprite(game->test_sprite);
+    destroy_Sprite(game->crew[game->crew_id]);
 	free(game);
 }
 
@@ -98,6 +104,11 @@ bool update_Game(Game game, Uint32 dt, Input input) {
 	
     }
 
+
+	if (isReleased_Input(input, SDLK_a)) {
+        game->crew_id = (game->crew_id + 1) % 5;
+    }
+
 	if (isReleased_Input(input, SDLK_d)) {
 		printf("b Released\n");
         if (game->layer < 1) game->layer++;
@@ -134,7 +145,7 @@ void draw_Game(Game game, SDL_Surface *screen) {
 	} else {
 		SDL_FillRect(screen, &cursor, SDL_MapRGB(screen->format,0,255,0));	
 	}
-    assert(game->test_sprite);
+    assert(game->crew[game->crew_id]);
     assert(screen);
 
     render_World(screen, game->world);
@@ -144,26 +155,29 @@ void draw_Game(Game game, SDL_Surface *screen) {
         game->last_x = ((int)game->cursor.x/32) * 32;
         game->last_y = ((int)game->cursor.y/32) * 32;
     }
-    vector2d_t v = get_position_Sprite(game->test_sprite);
+    vector2d_t v = get_position_Sprite(game->crew[game->crew_id]);
     if ((int)v.x != game->last_x) v.x = v.x < game->last_x ? (v.x + 1) : (v.x - 1);
     if ((int)v.y != game->last_y) v.y = v.y < game->last_y ? (v.y + 1) : (v.y - 1);
 
     if (((int)v.y != game->last_y) || ((int)v.x != game->last_x)) {
         game->frame = (game->frame + 1) %  3;
         if ((int)v.y > game->last_y) {
-            frame_Sprite(game->test_sprite, game->frame , 3);
+            frame_Sprite(game->crew[game->crew_id], game->frame , 3);
         } else if ((int)v.y < game->last_y) {
-            frame_Sprite(game->test_sprite, game->frame , 0);
+            frame_Sprite(game->crew[game->crew_id], game->frame , 0);
         }
         if ((int)v.x > game->last_x) {
-            frame_Sprite(game->test_sprite, game->frame , 1);
+            frame_Sprite(game->crew[game->crew_id], game->frame , 1);
         } else if ((int)v.x < game->last_x) {
-            frame_Sprite(game->test_sprite, game->frame , 2);
+            frame_Sprite(game->crew[game->crew_id], game->frame , 2);
         }
     }
 
-    position_Sprite(game->test_sprite, v.x, v.y);
+    position_Sprite(game->crew[game->crew_id], v.x, v.y);
 
-    render_Sprite(screen, game->test_sprite);
+    int i;
+    for (i = 0; i < 5; i++) {
+        render_Sprite(screen, game->crew[i]);
+    }
 
 }
