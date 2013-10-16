@@ -20,6 +20,7 @@ struct _game {
    bool isDragging;
    Sprite *test_sprite;
    int frame, last_x, last_y;
+   int id, layer;
 };
 
 Game new_Game(void) {
@@ -76,6 +77,14 @@ bool update_Game(Game game, Uint32 dt, Input input) {
 	if (mouse.leftDown) {
 		printf("Mouse Down at (%d, %d)\n", mouse.x, mouse.y);
 	}
+
+    if (mouse.rightDown) {
+		printf("Mouse Right Down at (%d, %d)\n", mouse.x, mouse.y);
+        int x = ((int)game->cursor.x/32);
+        int y = ((int)game->cursor.y/32);
+        set_tile_World(game->world, game->layer, x, y, game->id);
+    }
+
 	if (mouse.leftReleased) {
 		printf("Mouse Released\n");
 		game->isDragging = false;
@@ -86,9 +95,25 @@ bool update_Game(Game game, Uint32 dt, Input input) {
 	}
 	if (isDown_Input(input, SDLK_b)) {
 		printf("b Down\n");
+	
+    }
+
+	if (isReleased_Input(input, SDLK_d)) {
+		printf("b Released\n");
+        if (game->layer < 1) game->layer++;
 	}
+	if (isReleased_Input(input, SDLK_h)) {
+		printf("b Released\n");
+        if (game->layer > 0) game->layer--;
+	}
+    // Testing Shit.
 	if (isReleased_Input(input, SDLK_b)) {
 		printf("b Released\n");
+        if (game->id < 5) game->id++;
+	}
+	if (isReleased_Input(input, SDLK_m)) {
+		printf("b Released\n");
+        if (game->id > 0) game->id--;
 	}
 
 	return needsRedraw;
