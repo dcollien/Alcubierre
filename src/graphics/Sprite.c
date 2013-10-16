@@ -8,12 +8,14 @@
 struct sprite {
     SDL_Surface *image;
     SDL_Rect position;
+    SDL_Rect frame;
 };
 
 Sprite *create_Sprite(char *file_path) {
     printf("* [create_sprite][start] file_path: %s \n", file_path);
     struct sprite *new_sprite = NULL;
     SDL_Surface *loaded_image = NULL;
+    //int color_key;
 
     printf(" -> [create_sprite] Loading Image \n");
     loaded_image = IMG_Load(file_path);
@@ -31,6 +33,18 @@ Sprite *create_Sprite(char *file_path) {
     //SDL_FreeSurface(loaded_image);
     assert(new_sprite);
     position_Sprite(new_sprite, 0,0);
+    
+
+    /*
+    color_key = SDL_MapRGB(screen->format, 255, 0, 255);
+    SDL_SetColorKey(new_sprite->image, SDL_SRCCOLORKEY | SDL_RLEACCEL, color_key);
+    */
+
+    new_sprite->frame.x = 0;
+    new_sprite->frame.y = 0;
+    new_sprite->frame.w = 32;
+    new_sprite->frame.h = 32;
+
     printf("* [create_sprite][finished] file_path: %s \n", file_path);
 
     return new_sprite;
@@ -39,6 +53,11 @@ Sprite *create_Sprite(char *file_path) {
 void destroy_Sprite(Sprite *to_destroy) {
     SDL_FreeSurface(to_destroy->image);
     free(to_destroy);
+}
+
+void frame_Sprite(Sprite *to_frame, int x, int y) {
+    to_frame->frame.x = x * 32;
+    to_frame->frame.y = y * 32;
 }
 
 void position_Sprite(Sprite *to_position, int x, int y) {
@@ -52,5 +71,5 @@ void render_Sprite(SDL_Surface *window, Sprite *to_render) {
     assert(to_render->image);
 
 
-    SDL_BlitSurface(to_render->image, NULL, window, &to_render->position);
+    SDL_BlitSurface(to_render->image, &to_render->frame, window, &to_render->position);
 }
