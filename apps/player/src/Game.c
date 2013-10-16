@@ -6,18 +6,16 @@
 
 #include <SDL/SDL.h>
 #include "core/Game.h"
-#include "state/layer.h"
 
 #include "core/vector2d.h"
 #include "graphics/Sprite.h"
-
 #include "window.h"
+#include "state/World.h"
 
 #define CURSOR_SIZE 10
 
 struct _game {
-   struct layer *layer;
-   struct layer *layer_2;
+   World *world;
    vector2d_t cursor;
    bool isDragging;
    Sprite *test_sprite;
@@ -29,10 +27,9 @@ Game new_Game(void) {
 	assert(game != NULL);
 
 	printf("* [Initializing Map]\n");
-	game->layer = layer_init("../media/layers/map", 0);
-	game->layer_2 = layer_init("../media/layers/map_2", 0);
+    game->world = create_World("../media/world");
 
-	if (game->layer == NULL) {
+	if (game->world == NULL) {
 		printf("* [Initializing Map] Failed.\n");
 		return NULL;
 	}
@@ -115,9 +112,7 @@ void draw_Game(Game game, SDL_Surface *screen) {
     assert(game->test_sprite);
     assert(screen);
 
- 
-    layer_render(screen, game->layer);
-    layer_render(screen, game->layer_2);
+    render_World(screen, game->world);
 
     game->frame = (game->frame + 1) %  7;
     frame_Sprite(game->test_sprite, game->frame , 0);
