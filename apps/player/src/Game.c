@@ -13,7 +13,7 @@
 #include "state/World.h"
 
 #define CURSOR_SIZE 10
-#define MOV_RATE 1
+#define MOV_RATE (0.1 *dt)
 
 struct _game {
    World *world[2];
