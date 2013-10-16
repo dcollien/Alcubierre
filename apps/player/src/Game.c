@@ -148,8 +148,10 @@ void draw_Game(Game game, SDL_Surface *screen) {
     if ((int)v.x != game->last_x) v.x = v.x < game->last_x ? (v.x + 1) : (v.x - 1);
     if ((int)v.y != game->last_y) v.y = v.y < game->last_y ? (v.y + 1) : (v.y - 1);
 
-    game->frame = (game->frame + 1) %  3;
-    frame_Sprite(game->test_sprite, game->frame , 0);
+    if ((int)v.y != game->last_y || (int)v.x != game->last_x) {
+        game->frame = (game->frame + 1) %  3;
+        frame_Sprite(game->test_sprite, game->frame , 0);
+    }
 
     position_Sprite(game->test_sprite, v.x, v.y);
 
