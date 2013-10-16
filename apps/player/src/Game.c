@@ -13,15 +13,17 @@
 #include "state/World.h"
 
 #define CURSOR_SIZE 10
-#define MOV_RATE (0.1 *dt)
+#define MOV_RATE (0.1 * dt)
+#define FRAME_RATE (0.01 * dt)
 
 struct _game {
    World *world[2];
    vector2d_t cursor;
    bool isDragging;
    Sprite *crew[5];
-   int frame, last_x, last_y;
+   int last_x, last_y;
    int id, layer, crew_id, world_id;
+   double frame;
 };
 
 Game new_Game(void) {
@@ -39,7 +41,7 @@ Game new_Game(void) {
 
     game->crew_id = 0;
     game->world_id = 0;
-    game->frame = 0;
+    game->frame = 0.0;
 	game->cursor = v_(0,0);
 	game->isDragging = false;
     game->crew[0] = create_Sprite("../media/sprites/dudebro_blonde.png");
@@ -138,21 +140,28 @@ bool update_Game(Game game, Uint32 dt, Input input) {
 
     vector2d_t v = get_position_Sprite(game->crew[game->crew_id]);
     if (((int)v.y != game->last_y) || ((int)v.x != game->last_x)) {
-        game->frame = (game->frame + 1) %  3;
+
+        game->frame += FRAME_RATE;
+        printf("%f\n", game->frame);
+        if (game->frame > 3) {
+            game->frame = 0;
+        }
+        printf("%f\n", game->frame);
+
         if ((int)v.y > game->last_y) {
             v.y = v.y - MOV_RATE;
-            frame_Sprite(game->crew[game->crew_id], game->frame , 3);
+            frame_Sprite(game->crew[game->crew_id], (int)game->frame % 3, 3);
         } else if ((int)v.y < game->last_y) {
             v.y = v.y + MOV_RATE;
-            frame_Sprite(game->crew[game->crew_id], game->frame , 0);
+            frame_Sprite(game->crew[game->crew_id], (int)game->frame % 3, 0);
         }
 
         if ((int)v.x > game->last_x) {
             v.x = v.x - MOV_RATE;
-            frame_Sprite(game->crew[game->crew_id], game->frame , 1);
+            frame_Sprite(game->crew[game->crew_id], (int)game->frame % 3, 1);
         } else if ((int)v.x < game->last_x) {
             v.x = v.x + MOV_RATE;
-            frame_Sprite(game->crew[game->crew_id], game->frame , 2);
+            frame_Sprite(game->crew[game->crew_id], (int)game->frame % 3, 2);
         }
         position_Sprite(game->crew[game->crew_id], v.x, v.y);
     }
