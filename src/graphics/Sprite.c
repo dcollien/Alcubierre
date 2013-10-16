@@ -76,6 +76,7 @@ vector2d_t get_frame_Sprite(Sprite *to_get) {
 }
 
 
+
 void position_Sprite(Sprite *to_position, int x, int y) {
     to_position->position.x = x;
     to_position->position.y = y;
