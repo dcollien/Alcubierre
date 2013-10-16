@@ -9,6 +9,7 @@ struct sprite {
     SDL_Surface *image;
     SDL_Rect position;
     SDL_Rect frame;
+    int flag;
 };
 
 Sprite *create_Sprite(char *file_path) {
@@ -33,11 +34,10 @@ Sprite *create_Sprite(char *file_path) {
     //SDL_FreeSurface(loaded_image);
     assert(new_sprite);
     position_Sprite(new_sprite, 0,0);
+    new_sprite->flag = 0;
     
 
     /*
-    color_key = SDL_MapRGB(screen->format, 255, 0, 255);
-    SDL_SetColorKey(new_sprite->image, SDL_SRCCOLORKEY | SDL_RLEACCEL, color_key);
     */
 
     new_sprite->frame.x = 0;
@@ -66,9 +66,11 @@ void position_Sprite(Sprite *to_position, int x, int y) {
 }
 
 void render_Sprite(SDL_Surface *window, Sprite *to_render) {
-    printf("Rendering Sprite\n");
-    assert(to_render);
-    assert(to_render->image);
+    if (!to_render->flag) {
+        int color_key = SDL_MapRGB(window->format, 255, 0, 255);
+        SDL_SetColorKey(to_render->image, SDL_SRCCOLORKEY | SDL_RLEACCEL, color_key);
+        to_render->flag = 1;
+    }
 
 
     SDL_BlitSurface(to_render->image, &to_render->frame, window, &to_render->position);

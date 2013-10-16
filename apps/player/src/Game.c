@@ -21,6 +21,7 @@ struct _game {
    bool isDragging;
    Sprite *test_sprite;
    Sprite *floor_tiles[2];
+   int frame;
 };
 
 Game new_Game(void) {
@@ -35,9 +36,10 @@ Game new_Game(void) {
 		return NULL;
 	}
 
+    game->frame = 0;
 	game->cursor = v_(0,0);
 	game->isDragging = false;
-    game->test_sprite = create_Sprite("../media/objects/toilet.png");
+    game->test_sprite = create_Sprite("../media/sprite.png");
     game->floor_tiles[0] = create_Sprite("../media/tiles/blue_glass.png");
     game->floor_tiles[1] = create_Sprite("../media/tiles/green_glass.png");
 
@@ -119,8 +121,15 @@ void draw_Game(Game game, SDL_Surface *screen) {
             render_Sprite(screen, game->floor_tiles[(i+j)%2]);
         }
     }
+  
+    game->frame = (game->frame + 1) %  7;
+    frame_Sprite(game->test_sprite, game->frame , 0);
     
-    position_Sprite(game->test_sprite, game->cursor.x, game->cursor.y);
+    if (game->isDragging) {
+        position_Sprite(game->test_sprite, (((int)game->cursor.x/32))*32,
+                (((int)game->cursor.y/32))*32);
+    }
+
     render_Sprite(screen, game->test_sprite);
 
 }
