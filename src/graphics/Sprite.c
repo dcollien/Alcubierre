@@ -34,12 +34,9 @@ Sprite *create_Sprite(char *file_path) {
     printf(" -> [create_sprite] Freeing loaded_image \n");
     //SDL_FreeSurface(loaded_image);
     assert(new_sprite);
-    position_Sprite(new_sprite, 0,0);
+    position_Sprite(new_sprite, 16*32,12*32);
     new_sprite->flag = 0;
     
-
-    /*
-    */
 
     new_sprite->frame.x = 0;
     new_sprite->frame.y = 0;
