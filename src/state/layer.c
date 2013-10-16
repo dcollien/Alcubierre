@@ -70,9 +70,11 @@ void layer_render(SDL_Surface *screen, struct layer *layer) {
     for (i = 0; i < MAP_COLS; i++) {
         for (j = 0; j < MAP_ROWS; j++) {
             offset = layer->tiles[i*32+j];
-            frame_Sprite(layer->tilesheet, offset, 0);
-            position_Sprite(layer->tilesheet, j * 32, i * 32);
-            render_Sprite(screen, layer->tilesheet);
+            if (offset >= 0) {
+                frame_Sprite(layer->tilesheet, offset, 0);
+                position_Sprite(layer->tilesheet, j * 32, i * 32);
+                render_Sprite(screen, layer->tilesheet);
+            }
         }
     }
 }

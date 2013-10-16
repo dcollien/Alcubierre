@@ -17,6 +17,7 @@
 
 struct _game {
    struct layer *layer;
+   struct layer *layer_2;
    vector2d_t cursor;
    bool isDragging;
    Sprite *test_sprite;
@@ -29,6 +30,7 @@ Game new_Game(void) {
 
 	printf("* [Initializing Map]\n");
 	game->layer = layer_init("../media/layers/map", 0);
+	game->layer_2 = layer_init("../media/layers/map_2", 0);
 
 	if (game->layer == NULL) {
 		printf("* [Initializing Map] Failed.\n");
@@ -115,6 +117,7 @@ void draw_Game(Game game, SDL_Surface *screen) {
 
  
     layer_render(screen, game->layer);
+    layer_render(screen, game->layer_2);
 
     game->frame = (game->frame + 1) %  7;
     frame_Sprite(game->test_sprite, game->frame , 0);
