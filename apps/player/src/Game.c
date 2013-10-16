@@ -38,7 +38,7 @@ Game new_Game(void) {
     game->frame = 0;
 	game->cursor = v_(0,0);
 	game->isDragging = false;
-    game->test_sprite = create_Sprite("../media/sprite.png");
+    game->test_sprite = create_Sprite("../media/sprites/dudebro_blonde.png");
     game->last_x = 10;
     game->last_y = 10;
 
@@ -139,8 +139,6 @@ void draw_Game(Game game, SDL_Surface *screen) {
 
     render_World(screen, game->world);
 
-    game->frame = (game->frame + 1) %  7;
-    frame_Sprite(game->test_sprite, game->frame , 0);
     
     if (game->isDragging) {
         game->last_x = ((int)game->cursor.x/32) * 32;
@@ -149,6 +147,10 @@ void draw_Game(Game game, SDL_Surface *screen) {
     vector2d_t v = get_position_Sprite(game->test_sprite);
     if ((int)v.x != game->last_x) v.x = v.x < game->last_x ? (v.x + 1) : (v.x - 1);
     if ((int)v.y != game->last_y) v.y = v.y < game->last_y ? (v.y + 1) : (v.y - 1);
+
+    game->frame = (game->frame + 1) %  3;
+    frame_Sprite(game->test_sprite, game->frame , 0);
+
     position_Sprite(game->test_sprite, v.x, v.y);
 
     render_Sprite(screen, game->test_sprite);
