@@ -29,7 +29,7 @@ Game new_Game(void) {
 	assert(game != NULL);
 
 	printf("* [Initializing Map]\n");
-	game->layer = layer_init("../media/layers/layer_test", 0);
+	game->layer = layer_init("../media/layers/map", 0);
 
 	if (game->layer == NULL) {
 		printf("* [Initializing Map] Failed.\n");

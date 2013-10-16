@@ -8,9 +8,13 @@
 
 #include "core/limits.h"
 #include "core/types.h"
+#include "graphics/Sprite.h"
+#include <SDL/SDL.h>
 
 struct layer {
+    Sprite *tilesheet;
     tile_t tiles[MAP_SZ];
+    tile_t collision[MAP_SZ];
 };
 
 /**
@@ -33,6 +37,6 @@ void layer_destroy(struct layer *to_destroy);
  * @param to_render the layer you wish to render.
  * @return an error if something went wrong.
  */
-error_t layer_render(struct layer *to_render);
+void layer_render(SDL_Surface *screen, struct layer *layer);
 
 #endif /* ALC_LAYER_H_ */
