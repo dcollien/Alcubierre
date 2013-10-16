@@ -15,19 +15,19 @@ Sprite *create_Sprite(char *file_path) {
     struct sprite *new_sprite = NULL;
     SDL_Surface *loaded_image = NULL;
 
-    printf(" -> [create_sprite] Loading Image \n", file_path);
+    printf(" -> [create_sprite] Loading Image \n");
     loaded_image = IMG_Load(file_path);
     // Image failed to load.
     if (loaded_image == NULL) {
-        printf(" -> [create_sprite] Loading Image Failed \n", file_path);
+        printf(" -> [create_sprite] Loading Image Failed \n");
         return NULL;
     }
 
     new_sprite = malloc(sizeof(struct sprite));
-    printf(" -> [create_sprite] Optimizing Image \n", file_path);
+    printf(" -> [create_sprite] Optimizing Image \n");
     //new_sprite->image = SDL_DisplayFormat(loaded_image);
     new_sprite->image = loaded_image;
-    printf(" -> [create_sprite] Freeing loaded_image \n", file_path);
+    printf(" -> [create_sprite] Freeing loaded_image \n");
     //SDL_FreeSurface(loaded_image);
     assert(new_sprite);
     position_Sprite(new_sprite, 0,0);
