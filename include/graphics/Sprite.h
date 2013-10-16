@@ -2,12 +2,17 @@
 #define ALC_SPRITE_H_
 
 #include <SDL/SDL.h>
+#include "core/vector2d.h"
 
 typedef struct sprite Sprite;
 
 Sprite *create_Sprite(char *file_path);
 
 void destroy_Sprite(Sprite *to_destroy);
+
+vector2d_t get_position_Sprite(Sprite *to_get);
+
+vector2d_t get_frame_Sprite(Sprite *to_get);
 
 void position_Sprite(Sprite *to_position, int x, int y);
 

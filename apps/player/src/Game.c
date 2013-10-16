@@ -21,7 +21,7 @@ struct _game {
    bool isDragging;
    Sprite *test_sprite;
    Sprite *floor_tiles[2];
-   int frame;
+   int frame, last_x, last_y;
 };
 
 Game new_Game(void) {
@@ -42,6 +42,8 @@ Game new_Game(void) {
     game->test_sprite = create_Sprite("../media/sprite.png");
     game->floor_tiles[0] = create_Sprite("../media/tiles/blue_glass.png");
     game->floor_tiles[1] = create_Sprite("../media/tiles/green_glass.png");
+    game->last_x = 10;
+    game->last_y = 10;
 
     assert(game->test_sprite != NULL);
 
@@ -126,9 +128,13 @@ void draw_Game(Game game, SDL_Surface *screen) {
     frame_Sprite(game->test_sprite, game->frame , 0);
     
     if (game->isDragging) {
-        position_Sprite(game->test_sprite, (((int)game->cursor.x/32))*32,
-                (((int)game->cursor.y/32))*32);
+        game->last_x = ((int)game->cursor.x/32) * 32;
+        game->last_y = ((int)game->cursor.y/32) * 32;
     }
+    vector2d_t v = get_position_Sprite(game->test_sprite);
+    if ((int)v.x != game->last_x) v.x = v.x < game->last_x ? (v.x + 1) : (v.x - 1);
+    if ((int)v.y != game->last_y) v.y = v.y < game->last_y ? (v.y + 1) : (v.y - 1);
+    position_Sprite(game->test_sprite, v.x, v.y);
 
     render_Sprite(screen, game->test_sprite);
 

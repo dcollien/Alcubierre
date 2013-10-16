@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include "core/vector2d.h"
 
 struct sprite {
     SDL_Surface *image;
@@ -59,6 +60,21 @@ void frame_Sprite(Sprite *to_frame, int x, int y) {
     to_frame->frame.x = x * 32;
     to_frame->frame.y = y * 32;
 }
+
+vector2d_t get_position_Sprite(Sprite *to_get) {
+    vector2d_t v;
+    v.x = to_get->position.x;
+    v.y = to_get->position.y;
+    return v;
+}
+
+vector2d_t get_frame_Sprite(Sprite *to_get) {
+    vector2d_t v;
+    v.x = to_get->frame.x;
+    v.y = to_get->frame.y;
+    return v;
+}
+
 
 void position_Sprite(Sprite *to_position, int x, int y) {
     to_position->position.x = x;
