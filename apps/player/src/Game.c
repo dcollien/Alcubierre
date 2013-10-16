@@ -16,12 +16,12 @@
 #define MOV_RATE 1
 
 struct _game {
-   World *world;
+   World *world[2];
    vector2d_t cursor;
    bool isDragging;
    Sprite *crew[5];
    int frame, last_x, last_y;
-   int id, layer, crew_id;
+   int id, layer, crew_id, world_id;
 };
 
 Game new_Game(void) {
@@ -29,7 +29,8 @@ Game new_Game(void) {
 	assert(game != NULL);
 
 	printf("* [Initializing Map]\n");
-    game->world = create_World("../media/world");
+    game->world[0] = create_World("../media/world");
+    game->world[1] = create_World("../media/world_2");
 
 	if (game->world == NULL) {
 		printf("* [Initializing Map] Failed.\n");
@@ -37,6 +38,7 @@ Game new_Game(void) {
 	}
 
     game->crew_id = 0;
+    game->world_id = 0;
     game->frame = 0;
 	game->cursor = v_(0,0);
 	game->isDragging = false;
@@ -89,7 +91,7 @@ bool update_Game(Game game, Uint32 dt, Input input) {
 		printf("Mouse Right Down at (%d, %d)\n", mouse.x, mouse.y);
         int x = ((int)game->cursor.x/32);
         int y = ((int)game->cursor.y/32);
-        set_tile_World(game->world, game->layer, x, y, game->id);
+        set_tile_World(game->world[game->world_id], game->layer, x, y, game->id);
     }
 
 	if (mouse.leftReleased) {
@@ -131,6 +133,7 @@ bool update_Game(Game game, Uint32 dt, Input input) {
     if (game->isDragging) {
         game->last_x = ((int)game->cursor.x/32) * 32;
         game->last_y = ((int)game->cursor.y/32) * 32;
+        printf("X: %d Y %d\n", game->last_x/32, game->last_y/32);
     }
 
     vector2d_t v = get_position_Sprite(game->crew[game->crew_id]);
@@ -152,6 +155,13 @@ bool update_Game(Game game, Uint32 dt, Input input) {
             frame_Sprite(game->crew[game->crew_id], game->frame , 2);
         }
         position_Sprite(game->crew[game->crew_id], v.x, v.y);
+    }
+    if ((int)(v.x/32) >= 31) {
+        int i;
+        game->world_id = (game->world_id + 1) % 2;
+        for (i = 0; i < 5; i++) {
+            position_Sprite(game->crew[i], 0, 12*32);
+        }
     }
 
 	return needsRedraw;
@@ -175,7 +185,7 @@ void draw_Game(Game game, SDL_Surface *screen) {
     assert(game->crew[game->crew_id]);
     assert(screen);
 
-    render_World(screen, game->world);
+    render_World(screen, game->world[game->world_id]);
     int i;
     for (i = 0; i < 5; i++) {
         render_Sprite(screen, game->crew[i]);
