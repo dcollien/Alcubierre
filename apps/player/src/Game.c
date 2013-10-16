@@ -9,6 +9,7 @@
 #include "state/layer.h"
 
 #include "core/vector2d.h"
+#include "graphics/Sprite.h"
 
 #include "window.h"
 
@@ -16,10 +17,9 @@
 
 struct _game {
    struct layer *layer;
-
    vector2d_t cursor;
-
    bool isDragging;
+   Sprite *test_sprite;
 };
 
 Game new_Game(void) {
@@ -36,6 +36,8 @@ Game new_Game(void) {
 
 	game->cursor = v_(0,0);
 	game->isDragging = false;
+    game->test_sprite = create_Sprite("../media/objects/toilet.png");
+    assert(game->test_sprite != NULL);
 
 	return game;
 }
@@ -52,6 +54,7 @@ windowInfo_t getWindow_Game(Game game) {
 }
 
 void destroy_Game(Game game) {
+    destroy_Sprite(game->test_sprite);
 	free(game);
 }
 
@@ -102,4 +105,8 @@ void draw_Game(Game game, SDL_Surface *screen) {
 	} else {
 		SDL_FillRect(screen, &cursor, SDL_MapRGB(screen->format,0,255,0));	
 	}
+    assert(game->test_sprite);
+    assert(screen);
+    position_Sprite(game->test_sprite, game->cursor.x, game->cursor.y);
+    render_Sprite(screen, game->test_sprite);
 }

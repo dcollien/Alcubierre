@@ -3,7 +3,7 @@ LIBRARY_NAME=../lib/libAlcubierre.a
 INCLUDES=-I../include  -I/usr/local/include
 CFLAGS = ${INCLUDES} -g -Wall -O2 -pipe -lm
 LDFLAGS = -L/usr/local/lib
-LDLIBS = -lGL -lGLU `sdl-config --cflags --libs`
+LDLIBS = -lGL -lGLU `sdl-config --cflags --libs` -lSDL_image
 
 SRC := $(shell echo */*.c)
 OBJS := $(addprefix obj/, $(SRC:.c=.o))
