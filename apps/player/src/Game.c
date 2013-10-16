@@ -142,11 +142,9 @@ bool update_Game(Game game, Uint32 dt, Input input) {
     if (((int)v.y != game->last_y) || ((int)v.x != game->last_x)) {
 
         game->frame += FRAME_RATE;
-        printf("%f\n", game->frame);
         if (game->frame > 3) {
             game->frame = 0;
         }
-        printf("%f\n", game->frame);
 
         if ((int)v.y > game->last_y) {
             v.y = v.y - MOV_RATE;
