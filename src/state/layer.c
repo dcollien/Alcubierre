@@ -49,7 +49,8 @@ error_t layer_parse_file(const char *path, struct layer *layer) {
 
     while ((read = getline(&line, &len, fin)) != -1) {
         if (cur_line == 0) {
-            //layer->tilesheet = create_Sprite(line);
+            line[strlen(line)-1] = '\0';
+            layer->tilesheet = create_Sprite(line);
         } else if (cur_line < (MAP_COLS + 1)) {
             printf("%lu: %s", cur_line - 1, line);
             tok = strtok(line, " ,");
