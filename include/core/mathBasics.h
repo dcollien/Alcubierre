@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#define TAU (PI * 2)
+#define TAU (M_PI * 2)
 
 inline double randDouble(double amt) {
    return amt * (rand()/(double)RAND_MAX);
