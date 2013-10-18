@@ -38,6 +38,7 @@
 #define VOICE_TRIANGLE 2
 #define VOICE_SAW 3
 #define VOICE_PLUCK 4
+#define VOICE_ORGAN 5
 
 #define NOTE_STR_LEN 3
 
@@ -136,19 +137,22 @@ int main(int argc, char *argv[]) {
 
    int i;
 
-   for (i = 0; i != 9; ++i) {
-      if (i % 4 == 0) {
+   for (i = 0; i != 10; ++i) {
+      if (i % 5 == 0) {
          voice = VOICE_PLUCK;
          chordVelocity = 1.0;
-      } else if (i % 4 == 1) {
+      } else if (i % 5 == 1) {
          voice = VOICE_TRIANGLE;
          chordVelocity = 0.6;
-      } else if (i % 4 == 2) {
+      } else if (i % 5 == 2) {
          voice = VOICE_SAW;
          chordVelocity = 0.4;
-      } else if (i % 4 == 3) {
+      } else if (i % 5 == 3) {
          voice = VOICE_SQUARE;
          chordVelocity = 0.4;
+      } else {
+         voice = VOICE_ORGAN;
+         chordVelocity = 0.6;
       }
 
       playMajTriad(&playback, 1, voice, 
@@ -392,7 +396,7 @@ int main(int argc, char *argv[]) {
    playNote(&playback, 0, VOICE_SINE,
       createNote("C", 4, 250, 0.8)
    );
-   
+
    timing += 1000;
 
    playNote(&playback, 0, VOICE_SINE,
@@ -701,6 +705,10 @@ static double saw_wave(double x) {
    //return (-4.0 / TAU) * atan(1.0/tan(x/2.0));
 }
 
+static double cheese_wave(double x) {
+   return (sin(x) + sin(2*x) + 3*sin(3*x) + sin(4*x) + sin(5*x) + sin(6*x))/8;
+}
+
 static double pluck_wave(tone_t *tone) {
    // karplus-strong
 
@@ -762,6 +770,8 @@ static Sint16 getSignal(tone_t *tone) {
       return amplitude * saw_wave(x);
    } else if (voice == VOICE_PLUCK) {
       return amplitude * pluck_wave(tone);
+   } else if (voice == VOICE_ORGAN) {
+      return amplitude * cheese_wave(x);
    }
 
    return 0;
