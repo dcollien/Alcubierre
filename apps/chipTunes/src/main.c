@@ -69,6 +69,10 @@ typedef struct {
 
    double *wavetable;
 
+   double wobbleFreq;
+   double tremoloFreq;
+   double tremoloAmp;
+
    int samplesPlayed;
    int samplesLeft;
 } tone_t;
@@ -89,12 +93,12 @@ typedef struct {
 note_t createNote(char noteStr[NOTE_STR_LEN], int octave, int duration, double velocity);
 
 
-void playNote(audioPlayback_t *playback, int trackIdx, voice_t voice, note_t note);
+tone_t *playNote(audioPlayback_t *playback, int trackIdx, voice_t voice, note_t note);
 
 void playMajTriad(audioPlayback_t *playback, int trackOffset, voice_t voice, note_t rootNote, int inversion);
 void playMinTriad(audioPlayback_t *playback, int trackOffset, voice_t voice, note_t rootNote, int inversion);
 
-void play(audioPlayback_t *playback, int trackIdx, double frequency, int duration, voice_t voice, double velocity);
+tone_t *play(audioPlayback_t *playback, int trackIdx, double frequency, int duration, voice_t voice, double velocity);
 void initPlayback(audioPlayback_t *playback);
 void audio_callback(void *, Uint8 *, int);
 
@@ -506,14 +510,14 @@ static double getSemitoneFrequency(int semitoneIndex) {
    return frequencies[semitoneIndex];
 }
 
-void playNote(audioPlayback_t *playback, int trackIdx, voice_t voice, note_t note) {
+tone_t *playNote(audioPlayback_t *playback, int trackIdx, voice_t voice, note_t note) {
    double frequency;
 
    frequency = getSemitoneFrequency(getSemitoneIndex(note.note));
 
    frequency = frequency * pow(2, note.octave);
 
-   play(playback, trackIdx, frequency, note.duration, voice, note.velocity);
+   return play(playback, trackIdx, frequency, note.duration, voice, note.velocity);
 }
 
 void playMajTriad(audioPlayback_t *playback, int trackOffset, voice_t voice, note_t rootNote, int inversion) {
@@ -572,7 +576,7 @@ void playMinTriad(audioPlayback_t *playback, int trackOffset, voice_t voice, not
    play(playback, (trackOffset + 2) % NUM_TRACKS, sixthFreq, rootNote.duration, voice, rootNote.velocity * 0.8);
 }
 
-void play(audioPlayback_t *playback, int trackIdx, double frequency, int duration, voice_t voice, double velocity) {
+tone_t *play(audioPlayback_t *playback, int trackIdx, double frequency, int duration, voice_t voice, double velocity) {
    size_t last;
    int f;
    tone_t *tone;
@@ -600,6 +604,10 @@ void play(audioPlayback_t *playback, int trackIdx, double frequency, int duratio
       tone->samplesLeft = duration * SAMPLE_RATE / 1000;
       tone->samplesPlayed = 0;
 
+      tone->wobbleFreq = 0;
+      tone->tremoloFreq = 0;
+      tone->tremoloAmp = 0.25;
+
       // default ramp
       tone->envelope.attack  = 0;
       tone->envelope.decay   = 7*tone->samplesLeft/8;
@@ -609,6 +617,8 @@ void play(audioPlayback_t *playback, int trackIdx, double frequency, int duratio
       ++(track->numTones);
    }
    SDL_UnlockAudio();
+
+   return tone;
 }
 
 
@@ -763,6 +773,8 @@ static Sint16 getSignal(tone_t *tone) {
 
    double signalValue = 0;
    double envelopeAmp = 1.0;
+
+   // Waveform
    if (tone->frequency == 0 || voice == VOICE_SILENT) {
       signalValue = 0;
    } else if (voice == VOICE_SINE) {
@@ -779,6 +791,7 @@ static Sint16 getSignal(tone_t *tone) {
       signalValue = amplitude * organ_wave(x);
    }
 
+   // ADSR
    if (tone->samplesPlayed < tone->envelope.attack) {
       // attack
       envelopeAmp = (double)tone->samplesPlayed/(double)tone->envelope.attack;
@@ -794,6 +807,15 @@ static Sint16 getSignal(tone_t *tone) {
       // sustain
       envelopeAmp = tone->envelope.sustain;
    }
+
+   // LFO
+   if (tone->tremoloFreq != 0) {
+      x = tone->samplesPlayed * tone->tremoloFreq * TAU / SAMPLE_RATE;
+      envelopeAmp *= (sin(x) * tone->tremoloAmp) + (1 - tone->tremoloAmp);
+   }
+
+   // TODO Low-Pass Filter with LFO (wobble) on cut-off
+   
 
    return envelopeAmp * signalValue;
 }
