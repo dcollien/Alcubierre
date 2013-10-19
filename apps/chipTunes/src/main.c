@@ -46,6 +46,13 @@
 typedef int voice_t;
 
 typedef struct {
+   int attack;
+   int decay;
+   double sustain;
+   int release;
+} envelope_t;
+
+typedef struct {
    char note[NOTE_STR_LEN];
    int octave;
    int duration;
@@ -57,6 +64,8 @@ typedef struct {
    voice_t voice;
    double velocity;
    int track;
+
+   envelope_t envelope;
 
    double *wavetable;
 
@@ -70,7 +79,6 @@ typedef struct {
    size_t first;
    tone_t *tones;
    int volume;
-   bool isSyncing;
 } trackBuffer_t;
 
 typedef struct {
@@ -223,11 +231,11 @@ int main(int argc, char *argv[]) {
       timing += 1000;
 
       playMajTriad(&playback, 1, voice, 
-         createNote("G", 3, 300, chordVelocity), 1
+         createNote("G", 3, 250, chordVelocity), 1
       );
 
       playMajTriad(&playback, 1, voice, 
-         createNote("G", 3, 700, chordVelocity), 1
+         createNote("G", 3, 750, chordVelocity), 1
       );
 
       playNote(&playback, 0, VOICE_SINE,
@@ -498,15 +506,6 @@ static double getSemitoneFrequency(int semitoneIndex) {
    return frequencies[semitoneIndex];
 }
 
-
-void syncTracks(audioPlayback_t *playback) {
-   int i;
-
-   for (i = 0; i != NUM_TRACKS; ++i) {
-      playback->tracks[i].isSyncing = true;
-   }
-}
-
 void playNote(audioPlayback_t *playback, int trackIdx, voice_t voice, note_t note) {
    double frequency;
 
@@ -601,6 +600,12 @@ void play(audioPlayback_t *playback, int trackIdx, double frequency, int duratio
       tone->samplesLeft = duration * SAMPLE_RATE / 1000;
       tone->samplesPlayed = 0;
 
+      // default ramp
+      tone->envelope.attack  = 0;
+      tone->envelope.decay   = 7*tone->samplesLeft/8;
+      tone->envelope.sustain = 0.8;
+      tone->envelope.release = tone->samplesLeft/8;
+
       ++(track->numTones);
    }
    SDL_UnlockAudio();
@@ -616,7 +621,6 @@ void initPlayback(audioPlayback_t *playback) {
       playback->tracks[i].sizeTones = 8;
       playback->tracks[i].volume = SDL_MIX_MAXVOLUME;
       playback->tracks[i].tones = malloc(sizeof(tone_t) * playback->tracks[i].sizeTones);
-      playback->tracks[i].isSyncing = false;
    }
 }
 
@@ -705,7 +709,7 @@ static double saw_wave(double x) {
    //return (-4.0 / TAU) * atan(1.0/tan(x/2.0));
 }
 
-static double cheese_wave(double x) {
+static double organ_wave(double x) {
    return (sin(x) + sin(2*x) + 3*sin(3*x) + sin(4*x) + sin(5*x) + sin(6*x))/8;
 }
 
@@ -720,7 +724,6 @@ static double pluck_wave(tone_t *tone) {
    int totalSamples = tone->samplesLeft + tone->samplesPlayed;
 
    double smoothing = 0.8/(pow(totalSamples, (1.0/bufLength)));
-   double envelope;
 
    if (tone->samplesPlayed == 0) {
       // just plucked
@@ -735,15 +738,13 @@ static double pluck_wave(tone_t *tone) {
       // ringing
       if (tone->samplesPlayed % bufLength == 0) {
          // process sample buffer
-
          for (i = 1; i != bufLength; ++i) {
             tone->wavetable[i] = lerp(smoothing, tone->wavetable[i-1], tone->wavetable[i]);
          }
       }
    }
 
-   envelope = (tone->samplesLeft/(double)totalSamples);
-   value = envelope * tone->wavetable[tone->samplesPlayed % bufLength];
+   value = tone->wavetable[tone->samplesPlayed % bufLength];
 
    if (tone->samplesLeft == 0) {
       free(tone->wavetable);
@@ -757,22 +758,42 @@ static Sint16 getSignal(tone_t *tone) {
    double amplitude = AMPLITUDE * tone->velocity;
    voice_t voice = tone->voice;
 
+   int totalSamples = tone->samplesPlayed + tone->samplesLeft;
    double x = tone->samplesPlayed * tone->frequency * TAU / SAMPLE_RATE;
+
+   double signalValue = 0;
+   double envelopeAmp = 1.0;
    if (tone->frequency == 0 || voice == VOICE_SILENT) {
-      return 0;
+      signalValue = 0;
    } else if (voice == VOICE_SINE) {
-      return (Sint16)(amplitude * sin(x));
+      signalValue = (Sint16)(amplitude * sin(x));
    } else if (voice == VOICE_SQUARE) {
-      return amplitude * square_wave(x);
+      signalValue = amplitude * square_wave(x);
    } else if (voice == VOICE_TRIANGLE) {
-      return amplitude * triangle_wave(x);
+      signalValue = amplitude * triangle_wave(x);
    } else if (voice == VOICE_SAW) {
-      return amplitude * saw_wave(x);
+      signalValue = amplitude * saw_wave(x);
    } else if (voice == VOICE_PLUCK) {
-      return amplitude * pluck_wave(tone);
+      signalValue = amplitude * pluck_wave(tone);
    } else if (voice == VOICE_ORGAN) {
-      return amplitude * cheese_wave(x);
+      signalValue = amplitude * organ_wave(x);
    }
 
-   return 0;
+   if (tone->samplesPlayed < tone->envelope.attack) {
+      // attack
+      envelopeAmp = (double)tone->samplesPlayed/(double)tone->envelope.attack;
+   } else if (tone->samplesPlayed < (tone->envelope.attack + tone->envelope.decay)) {
+      // decay
+      envelopeAmp = (double)(tone->samplesPlayed-tone->envelope.attack)/(double)tone->envelope.decay;
+      envelopeAmp = lerp(envelopeAmp, 1.0, tone->envelope.sustain);
+   } else if (tone->samplesPlayed > (totalSamples - tone->envelope.release)) {
+      // release
+      envelopeAmp = (double)(tone->samplesPlayed - (totalSamples - tone->envelope.release))/(double)tone->envelope.release;
+      envelopeAmp = lerp(envelopeAmp, tone->envelope.sustain, 0.0);
+   } else {
+      // sustain
+      envelopeAmp = tone->envelope.sustain;
+   }
+
+   return envelopeAmp * signalValue;
 }
