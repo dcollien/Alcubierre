@@ -6,28 +6,16 @@
 
 #define TAU (M_PI * 2)
 
-inline double randDouble(double amt) {
-   return amt * (rand()/(double)RAND_MAX);
-}
+double randDouble(double amt);
 
-inline double vary(double amt) {
-   return 2.0 * amt * (randDouble(1.0) - 0.5);
-}
+double vary(double amt);
 
-inline int randInt(int amt) {
-   return rand() % amt;
-}
+int randInt(int amt);
 
-inline double lerp(double t, double from, double to) {
-   return t * to + (1.0 - t) * from;
-}
+double lerp(double t, double from, double to);
 
-inline double sq(double x) {
-   return x * x;
-}
+double sq(double x);
 
-inline double cube(double x) {
-   return x * x * x;
-}
+double cube(double x);
 
 #endif

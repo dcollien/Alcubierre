@@ -21,6 +21,7 @@ obj/%.o: %.c
 clean:
 	rm ../lib/*
 	rm obj/ai/*.o
+	rm obj/audio/*.o
 	rm obj/core/*.o
 	rm obj/graphics/*.o
 	rm obj/io/*.o

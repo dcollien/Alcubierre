@@ -6,7 +6,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "pathfinding/aStar.h"
+#include "ai/aStar.h"
 
 
 #define TYPE_OPEN 0

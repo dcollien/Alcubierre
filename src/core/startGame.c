@@ -10,9 +10,6 @@
 #include "core/Game.h"
 
 
-static int last = 0;
-static int delay = 0;
-
 static SDL_Surface *screen_create(
    const char *title, 
    size_t width,
