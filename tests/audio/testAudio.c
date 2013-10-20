@@ -255,6 +255,7 @@ int main(int argc, char *argv[]) {
    instrument_t sine    = instrument_sine(stuc);
    instrument_t square  = instrument_square(soft);
    instrument_t fuzzy   = instrument_sciFi(hold);
+   instrument_t wob     = instrument_wobble(hold);
 
    synth_setTrackVolume(0, 1.0);
    synth_setTrackVolume(1, 0.8);
@@ -263,14 +264,12 @@ int main(int argc, char *argv[]) {
    synth_setTrackVolume(4, 0.8);
    synth_setTrackVolume(5, 0.8);
 
-
    for (i = 0; i != 5; ++i) {
       if (i == 0) {
          synth_setTrackInstrument(0, guitar);
          synth_setTrackInstrument(1, organ);
          synth_setTrackInstrument(2, organ);
          synth_setTrackInstrument(3, organ);
-         synth_setTrackInstrument(4, fuzzy);
       } else if (i == 1) {
          synth_setTrackInstrument(0, fuzzy);
          synth_setTrackInstrument(1, strings);
@@ -296,6 +295,8 @@ int main(int argc, char *argv[]) {
       playTune(i);
    }
    
+   synth_setTrackInstrument(0, wob);
+
    playMajTriad(1,
       createNote("C", 4, 2000, 0.6), 0
    );
@@ -319,28 +320,28 @@ int main(int argc, char *argv[]) {
    timing += 1000;
 
    playNote(0,
-      createNote("C", 4, 250, 0.8)
+      createNote("C", 3, 250, 0.8)
    );
 
    playNote(0,
-      createNote("C", 4, 250, 0.8)
+      createNote("C", 3, 250, 0.8)
    );
 
    playNote(0,
-      createNote("C", 4, 250, 0.8)
+      createNote("C", 3, 250, 0.8)
    );
 
    playNote(0,
-      createNote("C", 4, 250, 0.8)
+      createNote("C", 3, 250, 0.8)
    );
 
    timing += 1000;
 
    playNote(0,
-      createNote("C", 3, 1000, 0.8)
+      createNote("C", 2, 3000, 0.8)
    );
 
-   timing += 1000;
+   timing += 3000;
 
    SDL_Delay(timing);
 

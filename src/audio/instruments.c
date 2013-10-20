@@ -54,7 +54,7 @@ static void generateWaveform(double *wavetable, int length, double velocity, voi
       wavetable[i] = velocity * waveform(i * x);
    }
 }
-
+/*
 static void generateWhiteNoise(double *wavetable, int length, double velocity, void *data) {
    int i;
    
@@ -62,7 +62,7 @@ static void generateWhiteNoise(double *wavetable, int length, double velocity, v
       wavetable[i] = velocity * vary(1.0);
    }
 }
-
+*/
 static void generateExcitation(double *wavetable, int length, double velocity, void *data) {
    int i;
    
@@ -112,6 +112,20 @@ static double sciFiFilter(double *wavetable, int length, int samplesPlayed, int 
    }
 
    return wavetable[samplesPlayed % length];
+}
+
+static double wobbleFilter(double *wavetable, int length, int samplesPlayed, int totalSamples, void *data) {
+   double frequency = 2;
+   double cutoff = 0.5 + 0.5*sin(frequency * TAU * samplesPlayed/(double)SAMPLE_RATE);
+
+   double wob = wavetable[0];
+   int i;
+
+   for (i = 1; i < (samplesPlayed % length); ++i) {
+      wob = cutoff * wob + (1.0 - cutoff) * wavetable[i];
+   }
+
+   return wob;
 }
 
 static double tremoloFilter(int length, int samplesPlayed, int totalSamples, void *data) {
@@ -244,6 +258,18 @@ instrument_t instrument_noisySin(envelope_t envelope) {
    instrument.data = (void *)noisy_sine;
 
    return instrument;
+}
+
+instrument_t instrument_wobble(envelope_t envelope) {
+   instrument_t instrument;
+
+   instrument.signalGenerator = generateWaveform;
+   instrument.signalFilter = wobbleFilter;
+   instrument.volumeFilter = NULL;
+   instrument.envelope = envelope;
+   instrument.data = (void *)square_wave;
+
+   return instrument; 
 }
 
 envelope_t envelope_stuccato(void) {
