@@ -109,6 +109,20 @@ static double sciFiFilter(double *wavetable, int length, int samplesPlayed, int 
    return wavetable[samplesPlayed % length];
 }
 
+static double wobbleFilter(double *wavetable, int length, int samplesPlayed, int totalSamples, void *data) {
+   double frequency = 2;
+   double cutoff = 0.5 + 0.5*sin(frequency * TAU * samplesPlayed/(double)SAMPLE_RATE);
+
+   double wob = wavetable[0];
+   int i;
+
+   for (i = 1; i < (samplesPlayed % length); ++i) {
+      wob = cutoff * wob + (1.0 - cutoff) * wavetable[i];
+   }
+
+   return wob;
+}
+
 static double tremoloFilter(int length, int samplesPlayed, int totalSamples, void *data) {
    double progress = (samplesPlayed/(double)totalSamples);
    double frequency = 24 + 10 * progress;
@@ -226,6 +240,18 @@ instrument_t instrument_vibrato(envelope_t envelope) {
    instrument.volumeFilter = tremoloFilter;
    instrument.envelope = envelope;
    instrument.data = (void *)triangle_wave;
+
+   return instrument; 
+}
+
+instrument_t instrument_wobble(envelope_t envelope) {
+   instrument_t instrument;
+
+   instrument.signalGenerator = generateWaveform;
+   instrument.signalFilter = wobbleFilter;
+   instrument.volumeFilter = NULL;
+   instrument.envelope = envelope;
+   instrument.data = (void *)square_wave;
 
    return instrument; 
 }

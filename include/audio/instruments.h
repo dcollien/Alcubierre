@@ -14,6 +14,7 @@ instrument_t instrument_leslieOrgan(envelope_t envelope);
 instrument_t instrument_pluckedString(envelope_t envelope);
 instrument_t instrument_sciFi(envelope_t envelope);
 instrument_t instrument_vibrato(envelope_t envelope);
+instrument_t instrument_wobble(envelope_t envelope);
 
 envelope_t envelope_stuccato(void);
 envelope_t envelope_hold(double sustain);
