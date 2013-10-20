@@ -36,6 +36,11 @@ static double wideband_wave(double x) {
    return sin(x*16);
 }
 
+static double noisy_sine (double x) {
+   // Fordy: TODO
+   return 0;
+}
+
 
 static void generateWaveform(double *wavetable, int length, double velocity, void *data) {
    int i;
@@ -228,6 +233,17 @@ instrument_t instrument_vibrato(envelope_t envelope) {
    instrument.data = (void *)triangle_wave;
 
    return instrument; 
+}
+
+instrument_t instrument_noisySin(envelope_t envelope) {
+   instrument_t instrument;
+
+   instrument.signalGenerator = generateWaveform;
+   instrument.signalFilter = NULL;
+   instrument.envelope = envelope;
+   instrument.data = (void *)noisy_sine;
+
+   return instrument;
 }
 
 envelope_t envelope_stuccato(void) {
