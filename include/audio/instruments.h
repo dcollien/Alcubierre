@@ -5,6 +5,22 @@
 
 // Prefabricated Instruments and ADSR Envelopes
 
+typedef enum {
+   WAVE_SINE,
+   WAVE_SQUARE,
+   WAVE_TRIANGLE,
+   WAVE_SAW
+} waveformPreset_t;
+
+instrument_t instrument_generic(
+   envelope_t envelope,
+   waveformPreset_t waveform,
+   double cutoffLFO,
+   double cutoffIntensity,
+   double ampLFO,
+   double ampIntensity
+);
+
 instrument_t instrument_sine(envelope_t envelope);
 instrument_t instrument_square(envelope_t envelope);
 instrument_t instrument_triangle(envelope_t envelope);

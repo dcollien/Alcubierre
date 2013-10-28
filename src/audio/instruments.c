@@ -3,6 +3,13 @@
 
 typedef double (*waveform_t)(double x);
 
+typedef struct {
+   double cutoffLFO;
+   double cutoffIntensity;
+   double ampLFO;
+   double ampIntensity;
+} genericInstrumentData_t;
+
 static double sine_wave(double x) {
    return sin(x);
 }
@@ -136,6 +143,41 @@ static double leslieFilter(int length, int samplesPlayed, int totalSamples, void
    return 0.8 + 0.2 * sin(frequency * samplesPlayed/(double)SAMPLE_RATE);
 }
 
+static double wobbleFilter(double *wavetable, int length, int samplesPlayed, int totalSamples, void *data) {
+   double frequency = 2;
+   double cutoff = 0.5 + 0.5*sin(frequency * TAU * samplesPlayed/(double)SAMPLE_RATE);
+
+   double wob = wavetable[0];
+   int i;
+
+   for (i = 1; i < (samplesPlayed % length); ++i) {
+      wob = cutoff * wob + (1.0 - cutoff) * wavetable[i];
+   }
+
+   return wob;
+}
+
+static double tremoloFilter(int length, int samplesPlayed, int totalSamples, void *data) {
+   double progress = (samplesPlayed/(double)totalSamples);
+   double frequency = 24 + 10 * progress;
+
+   return progress * sin(frequency * samplesPlayed/(double)SAMPLE_RATE) + (1.0 - progress);
+}
+
+instrument_t instrument_generic(
+   envelope_t envelope,
+   waveformPreset_t waveform,
+   double cutoffLFO,
+   double cutoffIntensity,
+   double ampLFO,
+   double ampIntensity
+) {
+   static genericInstrumentData_t instrumentData;
+
+   instrumentData.
+}
+
+
 instrument_t instrument_sine(envelope_t envelope) {
    instrument_t instrument;
 
@@ -255,6 +297,8 @@ instrument_t instrument_wobble(envelope_t envelope) {
 
    return instrument; 
 }
+
+
 
 envelope_t envelope_stuccato(void) {
    envelope_t env;
