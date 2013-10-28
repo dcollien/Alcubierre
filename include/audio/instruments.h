@@ -12,6 +12,7 @@ typedef enum {
    WAVE_SAW
 } waveformPreset_t;
 
+/*
 instrument_t instrument_generic(
    envelope_t envelope,
    waveformPreset_t waveform,
@@ -20,7 +21,7 @@ instrument_t instrument_generic(
    double ampLFO,
    double ampIntensity
 );
-
+*/
 instrument_t instrument_sine(envelope_t envelope);
 instrument_t instrument_square(envelope_t envelope);
 instrument_t instrument_triangle(envelope_t envelope);

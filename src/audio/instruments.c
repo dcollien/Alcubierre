@@ -121,20 +121,6 @@ static double sciFiFilter(double *wavetable, int length, int samplesPlayed, int 
    return wavetable[samplesPlayed % length];
 }
 
-static double wobbleFilter(double *wavetable, int length, int samplesPlayed, int totalSamples, void *data) {
-   double frequency = 2;
-   double cutoff = 0.5 + 0.5*sin(frequency * TAU * samplesPlayed/(double)SAMPLE_RATE);
-
-   double wob = wavetable[0];
-   int i;
-
-   for (i = 1; i < (samplesPlayed % length); ++i) {
-      wob = cutoff * wob + (1.0 - cutoff) * wavetable[i];
-   }
-
-   return wob;
-}
-
 static double flangeFilter(double *wavetable, int length, int samplesPlayed, int totalSamples, void *data) {
 
    int flange = 5;
@@ -147,13 +133,6 @@ static double flangeFilter(double *wavetable, int length, int samplesPlayed, int
    }
 
    return wavetable[samplesPlayed % length];
-}
-
-static double tremoloFilter(int length, int samplesPlayed, int totalSamples, void *data) {
-   double progress = (samplesPlayed/(double)totalSamples);
-   double frequency = 24 + 10 * progress;
-
-   return progress * sin(frequency * samplesPlayed/(double)SAMPLE_RATE) + (1.0 - progress);
 }
 
 static double leslieFilter(int length, int samplesPlayed, int totalSamples, void *data) {
@@ -183,6 +162,7 @@ static double tremoloFilter(int length, int samplesPlayed, int totalSamples, voi
    return progress * sin(frequency * samplesPlayed/(double)SAMPLE_RATE) + (1.0 - progress);
 }
 
+/*
 instrument_t instrument_generic(
    envelope_t envelope,
    waveformPreset_t waveform,
@@ -195,7 +175,7 @@ instrument_t instrument_generic(
 
    instrumentData.
 }
-
+*/
 
 instrument_t instrument_sine(envelope_t envelope) {
    instrument_t instrument;
