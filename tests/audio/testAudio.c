@@ -249,7 +249,7 @@ int main(int argc, char *argv[]) {
    envelope_t soft = envelope_soft();
    envelope_t stuc = envelope_stuccato();
 
-   instrument_t guitar  = instrument_pluckedString(hold);
+   instrument_t guitar  = instrument_noisySin(hold);
    instrument_t organ   = instrument_leslieOrgan(soft);
    instrument_t strings = instrument_vibrato(soft);
    instrument_t sine    = instrument_sine(stuc);
